@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clothing Ecommerce</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+    background: linear-gradient(to right, #050505, #282626);
+    color: #fff;
+}
+
+.navbar {
+    background: linear-gradient(to right, #ed5904, #ea5804);
+}
+
+.navbar-brand,
+.nav-link {
+    color: #fff !important;
+}
+
+.dropdown-menu {
+    background: linear-gradient(to right, #ff9966, #ff5e62);
+}
+
+.dropdown-item {
+    color: #fff;
+}
+
+.carousel-item {
+    background: linear-gradient(to right, #36d1dc, #5b86e5);
+}
+
+.card {
+    background: linear-gradient(to right, #ff9966, #ff5e62);
+    color: #fff;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #36d1dc, #5b86e5);
+    border: none;
+}
+
+.btn-secondary {
+    background: linear-gradient(to right, #ff9966, #ff5e62);
+    border: none;
+}
+
+.footer {
+    background: linear-gradient(to right, #36d1dc, #5b86e5);
+}
+
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Home</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown">Categories</a>
+                    <div class="dropdown-menu">
+                        <!-- Add categories here -->
+                        <a class="dropdown-item" href="#">Category 1</a>
+                        <a class="dropdown-item" href="#">Category 2</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-toggle="dropdown">Account</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Login</a>
+                    <a class="dropdown-item" href="#">Sign Up</a>
+                </div>
+            </div>
+            <a class="navbar-brand" href="#">Cart</a>
+        </div>
+    </nav>
+
+    <!-- Carousel -->
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Add carousel items here -->
+            <div class="carousel-item active">
+                <img src="./wallpaperflare.com_wallpaper (1).jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="./wallpaperflare.com_wallpaper (2).jpg" class="d-block w-100" alt="...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Cards -->
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Product Name</h5>
+            <p class="card-text">Product Description</p>
+            <a href="#" class="btn btn-primary">Buy Now</a>
+            <a href="#" class="btn btn-secondary">Add to Cart</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <span class="text-muted">Place footer content here.</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
