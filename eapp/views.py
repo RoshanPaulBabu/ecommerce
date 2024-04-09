@@ -7,7 +7,20 @@ from django.core.exceptions import ValidationError
 from .models import Customer
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.decorators import login_required
-from .forms import CustomerUpdateForm
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib import messages
+from .models import Customer
 
 
 # Create your views here.
@@ -19,45 +32,42 @@ def index(request):
 
 def register(request):
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')  # Corrected variable name
-        last_name = request.POST.get('last_name')  # Corrected variable name
-        email = request.POST.get('email')  # Corrected variable name
-        phone_no = request.POST.get('phone_no')  # Corrected variable name
-        password = request.POST.get('password')  # Corrected variable name
-        confirm_password = request.POST.get('confirm_password')  # Corrected variable name
+        full_name = request.POST.get('full-name')
+        email = request.POST.get('your-email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm-password')
+        phone_number = request.POST.get('phone-number')
 
+        # Check if passwords match
         if password != confirm_password:
             messages.error(request, 'Passwords Do Not Match!')
             return render(request, 'customer/register.html')
 
+        # Check password strength using Django's built-in validators
         try:
             validate_password(password)
         except ValidationError as e:
-            messages.error(request, '\n' + '\n'.join(e.messages))
+            messages.error(request, ', '.join(e.messages))
             return render(request, 'customer/register.html')
 
+        # Create user
         try:
-            # Creating a User object
-            user = User.objects.create_user(username=email,
-                                            first_name=first_name,
-                                            last_name=last_name,
-                                            email=email,
-                                            password=password)
+            user = User.objects.create_user(username=email, email=email, password=password)
+        except:
+            messages.error(request, 'Email already exists!')
+            return render(request, 'customer/register.html')
 
-            # Creating a Customer object (assuming you have a Customer model)
-            customer = Customer.objects.create(first_name=first_name,
-                                               last_name=last_name,
-                                               email=email,
-                                               phone_no=phone_no)
-
-            # Authenticating the user
-            user = authenticate(username=email, password=password)
+        # Create customer
+        customer = Customer.objects.create(user=user, customer_name=full_name, email=email, contact_number=phone_number)
+        
+        # Authenticate and login user
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
             login(request, user)
-
             messages.success(request, 'Your Account Has Been Registered Successfully!')
             return redirect('index')
-        except Exception as e:
-            messages.error(request, 'Account Was Not Created! Try Again')
+        else:
+            messages.error(request, 'Failed to login user.')
             return render(request, 'customer/register.html')
 
     return render(request, 'customer/register.html')
@@ -84,18 +94,7 @@ def user_logout(request):
     logout(request)
     return redirect('index') 
 
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib import messages
-from .models import Customer
+
 
 def change_password(request):
     if request.method == 'POST':
@@ -123,6 +122,8 @@ class CustomTokenGenerator(PasswordResetTokenGenerator):
             str(user.pk) + user.password + str(timestamp)
         )
 
+
+
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -132,22 +133,30 @@ def forgot_password(request):
             token = CustomTokenGenerator().make_token(user)
             reset_password_url = request.build_absolute_uri('/reset_password/{}/{}/'.format(uid, token))
             email_subject = 'Reset Your Password'
-            email_body = render_to_string('customer/reset_password_email.html', {
+
+            # Render both HTML and plain text versions of the email
+            email_body_html = render_to_string('customer/reset_password_email.html', {
                 'reset_password_url': reset_password_url,
                 'user': user,
             })
-            email = EmailMessage(
+            email_body_text = "Click the following link to reset your password: {}".format(reset_password_url)
+
+            # Create an EmailMultiAlternatives object to send both HTML and plain text versions
+            email = EmailMultiAlternatives(
                 email_subject,
-                email_body,
+                email_body_text,
                 settings.EMAIL_HOST_USER,
                 [email],
             )
+            email.attach_alternative(email_body_html, 'text/html')  # Attach HTML version
             email.send(fail_silently=False)
+
             messages.success(request, 'An email has been sent to your email address with instructions on how to reset your password.')
             return redirect('login')
         except User.DoesNotExist:
             messages.error(request, "User with this email does not exist.")
     return render(request, 'customer/forgot_password.html')
+
 
 def reset_password(request, uidb64, token):
     try:
@@ -174,27 +183,35 @@ def reset_password(request, uidb64, token):
         return redirect('login')
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Customer
+
 @login_required
-def update_personal_info(request):
-    user = request.user
+def edit_customer(request):
+    # Retrieve the current logged-in user
+    current_user = request.user
+    # Check if the current user has a corresponding Customer instance
     try:
-        customer = user.customer  # Retrieve the associated Customer object
+        customer = Customer.objects.get(user=current_user)
     except Customer.DoesNotExist:
-        # If Customer object doesn't exist, create one
-        customer = Customer(user=user)
-        customer.save()
+        # Handle the case where the logged-in user does not have a corresponding Customer instance
+        return HttpResponse("You are not associated with any customer profile.")
 
     if request.method == 'POST':
-        form = CustomerUpdateForm(request.POST, instance=customer)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')  # Redirect to the profile page after successful update
-    else:
-        # Populate initial values from the existing Customer object
-        form = CustomerUpdateForm(instance=customer, initial={
-            'first_name': customer.first_name,
-            'last_name': customer.last_name,
-            'email': customer.email,
-            'phone_no': customer.phone_no,
-        })
-    return render(request, 'customer/update_personal_info.html', {'form': form})
+        # Update customer details with the data from the form
+        customer.customer_name = request.POST['full-name']
+        customer.email = request.POST['your-email']
+        customer.contact_number = request.POST['phone-number']
+        customer.save()
+
+        # Update associated user's email
+        current_user.email = request.POST['your-email']
+        current_user.username = request.POST['your-email']
+        current_user.save()
+
+        # Redirect to the customer detail page after editing
+        return redirect('index')
+
+    # If it's a GET request, display the edit form with existing customer details
+    return render(request, 'customer/edit_customer.html', {'customer': customer})

@@ -9,5 +9,5 @@ urlpatterns = [
     path('forgot_password/', views.forgot_password, name='forgot_password'),
     path('reset_password/<uidb64>/<token>/', views.reset_password, name='reset_password'),
     path('logout/', views.user_logout, name='logout'),
-    path('update_personal_info/', views.update_personal_info, name='update_personal_info'),
+    path('edit_customer/', views.edit_customer, name='edit_customer'),
 ]

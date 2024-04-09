@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Customer Details</title>
+</head>
+<body>
+    <h1>Edit Customer Details</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="full-name">Full Name:</label>
+        <input type="text" id="full-name" name="full-name" value="{{ customer.customer_name }}"><br>
+        <label for="your-email">Email:</label>
+        <input type="email" id="your-email" name="your-email" value="{{ customer.email }}"><br>
+        <label for="phone-number">Phone Number:</label>
+        <input type="text" id="phone-number" name="phone-number" value="{{ customer.contact_number }}"><br>
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
