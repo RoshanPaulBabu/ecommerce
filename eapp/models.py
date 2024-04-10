@@ -34,10 +34,16 @@ class Seller(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=100, unique=True)
+    
+    def __str__(self):
+        return self.category_name
 
 class Subcategory(models.Model):
     subcategory_name = models.CharField(max_length=100)
     parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.subcategory_name
 
 class Product(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
@@ -45,11 +51,21 @@ class Product(models.Model):
     product_name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
+    image_1 = models.ImageField(upload_to='product_images/')
+    image_2 = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image_3 = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image_4 = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    
+    def __str__(self):
+        return self.product_name
 
-class Inventory(models.Model):
+class SizeVariant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size = models.CharField(max_length=20)
     quantity_in_stock = models.IntegerField()
     reorder_level = models.IntegerField()
+    # You can add more fields as needed, such as price for this variant
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -60,7 +76,7 @@ class Order(models.Model):
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size_variant = models.ForeignKey(SizeVariant, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 

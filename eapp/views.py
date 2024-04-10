@@ -28,7 +28,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # Create your views here.
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    products = Product.objects.all()
+    return render(request, 'index.html', {'products': products})
 
 
 def customer_dashboard(request):
@@ -243,6 +244,5 @@ class AddressDeleteView(DeleteView):
     model = Address
     success_url = reverse_lazy('address_list')  # Redirect to address list after deletion
     template_name = 'customer/address_confirm_delete.html'  # Template for confirmation dialog
-    
     
     
