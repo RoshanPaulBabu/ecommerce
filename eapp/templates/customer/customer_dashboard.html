@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+  
+  .card {
+    width: 200px;
+    height: 150px;
+    margin: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .orange {
+    background-color: #fff1f0;
+    color: #fe4536;
+  }
+  
+  .icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #fe4536; /* Set icon color to white */
+  }
+
+  .main-menu a {
+    color: black !important;
+  }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="card orange">
+      <a href="my_orders.html">
+        <i class="fas fa-shopping-basket icon"></i>
+        <h3>My Orders</h3>
+      </a>
+    </div>
+    <div class="card orange">
+      <a href="my_payments.html">
+        <i class="fas fa-credit-card icon"></i>
+        <h3>My Payments</h3>
+      </a>
+    </div>
+    <div class="card orange">
+      <a href="{% url 'edit_customer' %}">
+        <i class="fas fa-user-circle icon"></i>
+        <h3>My Profile</h3>
+      </a>
+    </div>
+    <div class="card orange">
+      <a href="{% url 'address_list' %}">
+        <i class="fas fa-map-marker-alt icon"></i>
+        <h3>My Addresses</h3>
+      </a>
+    </div>
+  </div>
+{% endblock %}

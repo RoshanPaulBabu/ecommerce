@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.urls import reverse_lazy
 from .models import Customer
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.decorators import login_required
@@ -20,13 +21,18 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
-from .models import Customer
+from .models import *
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
 # Create your views here.
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
+
+
+def customer_dashboard(request):
+    return render(request, 'customer/customer_dashboard.html')
 
 
 
@@ -215,3 +221,28 @@ def edit_customer(request):
 
     # If it's a GET request, display the edit form with existing customer details
     return render(request, 'customer/edit_customer.html', {'customer': customer})
+
+
+class AddressListView(ListView):
+    model = Address
+    template_name = 'customer/address_list.html'
+
+class AddressCreateView(CreateView):
+    model = Address
+    fields = ['recepient_name', 'recepient_contact', 'address_line1', 'address_line2', 'city', 'state', 'postal_code']
+    template_name = 'customer/address_form.html'
+    success_url = reverse_lazy('address_list') 
+
+class AddressUpdateView(UpdateView):
+    model = Address
+    fields = ['recepient_name', 'recepient_contact', 'address_line1', 'address_line2', 'city', 'state', 'postal_code']
+    template_name = 'customer/address_form.html'
+    success_url = reverse_lazy('address_list') 
+    
+class AddressDeleteView(DeleteView):
+    model = Address
+    success_url = reverse_lazy('address_list')  # Redirect to address list after deletion
+    template_name = 'customer/address_confirm_delete.html'  # Template for confirmation dialog
+    
+    
+    
