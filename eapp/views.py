@@ -13,16 +13,14 @@ from django.template.loader import render_to_string
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
 from .models import *
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from .forms import AddressForm
 
 
 # Create your views here.
@@ -224,25 +222,107 @@ def edit_customer(request):
     return render(request, 'customer/edit_customer.html', {'customer': customer})
 
 
-class AddressListView(ListView):
-    model = Address
-    template_name = 'customer/address_list.html'
+    
 
-class AddressCreateView(CreateView):
-    model = Address
-    fields = ['recepient_name', 'recepient_contact', 'address_line1', 'address_line2', 'city', 'state', 'postal_code']
-    template_name = 'customer/address_form.html'
-    success_url = reverse_lazy('address_list') 
+@login_required
+def address_list(request):
+    addresses = Address.objects.filter(customer=request.user.customer)
+    return render(request, 'customer/address_list.html', {'addresses': addresses})
 
-class AddressUpdateView(UpdateView):
-    model = Address
-    fields = ['recepient_name', 'recepient_contact', 'address_line1', 'address_line2', 'city', 'state', 'postal_code']
-    template_name = 'customer/address_form.html'
-    success_url = reverse_lazy('address_list') 
-    
-class AddressDeleteView(DeleteView):
-    model = Address
-    success_url = reverse_lazy('address_list')  # Redirect to address list after deletion
-    template_name = 'customer/address_confirm_delete.html'  # Template for confirmation dialog
-    
-    
+@login_required
+def address_create(request):
+    if request.method == 'POST':
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.customer = request.user.customer
+            address.save()
+            return redirect('address_list')
+    else:
+        form = AddressForm()
+    return render(request, 'customer/address_form.html', {'form': form})
+
+@login_required
+def address_edit(request, pk):
+    address = get_object_or_404(Address, pk=pk, customer=request.user.customer)
+    if request.method == 'POST':
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect('address_list')
+    else:
+        form = AddressForm(instance=address)
+    return render(request, 'customer/address_form.html', {'form': form})
+
+@login_required
+def address_delete(request, pk):
+    address = get_object_or_404(Address, pk=pk, customer=request.user.customer)
+    if request.method == 'POST':
+        address.delete()
+        return redirect('address_list')
+    return render(request, 'customer/address_confirm_delete.html', {'address': address})
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    return render(request, 'product-details.html', {'product': product})
+
+
+def cart(request):
+    customer = request.user.customer
+    cart_items = Cart.objects.filter(customer=customer)
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    }
+    return render(request, 'cart.html', context)
+
+@login_required
+def add_to_cart(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = request.POST.get('quantity')
+        if product_id and quantity:
+            try:
+                product = Product.objects.get(pk=product_id)
+                customer = request.user.customer
+                cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
+                cart_item.quantity += int(quantity)
+                if cart_item.quantity <= product.quantity_in_stock:
+                    cart_item.save()
+                    messages.success(request, f'{quantity} item(s) added to cart.')
+                else:
+                    messages.error(request, 'Requested quantity exceeds available stock.')
+            except Product.DoesNotExist:
+                messages.error(request, 'Product does not exist.')
+        else:
+            messages.error(request, 'Invalid request.')
+    return redirect('cart')
+
+
+def delete_item_in_cart(request, id):
+    customer = request.user.customer
+    product = get_object_or_404(Product, id=id)
+    cart_item = Cart.objects.get(customer=customer, product=product)
+    cart_item.delete()
+    return redirect('cart')
+
+
+@login_required
+def increase_quantity(request, cart_item_id):
+    cart_item = Cart.objects.get(pk=cart_item_id)
+    if cart_item.quantity < cart_item.product.quantity_in_stock:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('cart')
+
+@login_required
+def decrease_quantity(request, cart_item_id):
+    cart_item = Cart.objects.get(pk=cart_item_id)
+    if cart_item.quantity > 1:
+        cart_item.quantity -= 1
+        cart_item.save()
+    else:
+        cart_item.delete()
+    return redirect('cart')
+

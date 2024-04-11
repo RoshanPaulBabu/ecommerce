@@ -1,4 +1,22 @@
 {% extends 'base.html' %} {% block content %} {% load static %}
+
+<style>
+  #cart-button {
+    border: none;
+    background-color: #fcfcfc; /* Change color as needed */
+    color: rgb(0, 0, 0);
+    padding: 10px 20px;
+    border-radius: 60%; /* Make it round */
+    font-size: 20px; /* Increase font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#cart-button:hover {
+    background-color: #fe4536; /* Darker color on hover */
+}
+
+</style>
 <!-- slider-area start -->
 <section class="slider-area pos-relative">
   <div class="slider-active">
@@ -86,7 +104,7 @@
         <div class="single-product-item">
           <div class="product-wrapper mb-50">
             <div class="product-img mb-25">
-              <a href="product-details.html">
+              <a href="{% url 'product_detail' product.id %}">
                 <img src="{{ product.image_1.url }}" alt="" />
                 <img
                   class="secondary-img"
@@ -95,23 +113,34 @@
                 />
               </a>
               <div class="product-action text-center">
-                <a href="#" title="Shoppingb Cart">
-                  <i class="flaticon-shopping-cart"></i>
-                </a>
-                <a href="#" title="Quick View">
+                <form id="add-to-cart-form" action="{% url 'add_to_cart' %}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="product_id" value="{{ product.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" id="cart-button">
+                      <i class="flaticon-shopping-cart"></i>
+                  </button>
+              </form>                          
+                <a href="{% url 'product_detail' product.id %}" title="Quick View">
                   <i class="flaticon-eye"></i>
                 </a>
               </div>
             </div>
             <div class="product-content">
+              <div class="pro-cat mb-10">
+                <a href="{% url 'product_detail' product.id %}">{{ product.subcategory}}</a>
+            </div>
               <h3 class="product-title">
-                <a href="">{{ product.product_name }}</a>
+                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
               </h3>
               <div class="product-meta">
                 <div class="pro-price">
                   <span>{{ product.price }}</span>
                 </div>
               </div>
+              <div class="product-wishlist">
+                <a href="#"><i class="far fa-heart" title="Wishlist"></i></a>
+            </div>
             </div>
           </div>
         </div>

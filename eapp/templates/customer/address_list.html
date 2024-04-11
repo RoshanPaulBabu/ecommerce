@@ -24,32 +24,25 @@
         <div class="card-body">
             <h5 class="card-title">Add New Address</h5>
             <p class="card-text">Click below to add a new address:</p>
-            <a href="{% url 'address_add' %}" class="btn btn-primary">Add Address</a>
+            <a href="{% url 'address_create' %}" class="btn btn-primary">Add Address</a>
         </div>
     </div>
-
+    {% if request.user.customer.address_set.all %}
     <!-- Cards for displaying existing addresses -->
-    {% for address in object_list %}
+    {% for address in request.user.customer.address_set.all %}
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">{{ address.recepient_name }}</h5>
             <p class="card-text">{{ address.address_line1 }}</p>
             <p class="card-text">{{ address.city }}, {{ address.state }} - {{ address.postal_code }}</p>
             <a href="{% url 'address_edit' address.id %}" class="btn btn-info">Edit</a>
-            <a href="#" class="btn btn-danger" onclick="deleteAddress({{ address.id }})">Delete</a>
+            <a href="{% url 'address_delete' address.id %}" class="btn btn-danger">Delete</a>
         </div>
     </div>
     {% endfor %}
+    {% else %}
+    <p>No addresses found.</p>
+{% endif %}
 </div>
-
-<!-- JavaScript for deleting addresses -->
-<script>
-    function deleteAddress(addressId) {
-        if (confirm("Are you sure you want to delete this address?")) {
-            var deleteUrl = "{% url 'address_delete' pk=0 %}".replace('0', addressId);
-            window.location.href = deleteUrl;
-        }
-    }
-</script>
 
 {% endblock %}

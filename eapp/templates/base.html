@@ -47,7 +47,7 @@
                         <span class="bar3"></span>
                     </div>
                     <div class="logo">
-                        <a href="index.html"><img src="{% static 'img/logo/logo-white.png' %}" alt=""></a>
+                        <a href="index.html"><img src="{% static 'img/logo/logo.png' %}" alt=""></a>
                     </div>
                 </div>
                 <div class="col-xl-7 col-lg-6 col-md-8 col-8 d-none d-xl-block">
@@ -108,67 +108,7 @@
                             <!-- If user is not authenticated, display login button -->
                             <li class="login-btn"><a href="{% url 'login' %}"><i class="far fa-user"></i></a></li>
                             {% endif %}
-                            <li class="d-shop-cart"><a href="#"><i class="flaticon-shopping-cart"></i> <span class="cart-count">3</span></a>
-                                <ul class="minicart">
-                                    <li>
-                                        <div class="cart-img">
-                                            <a href="product-details.html">
-                                                <img src="{% static 'img/product/pro1.jpg' %}" alt="" />
-                                            </a>
-                                        </div>
-                                        <div class="cart-content">
-                                            <h3>
-                                                <a href="product-details.html">Black & White Shoes</a>
-                                            </h3>
-                                            <div class="cart-price">
-                                                <span class="new">$ 229.9</span>
-                                                <span>
-                                                    <del>$239.9</del>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="del-icon">
-                                            <a href="#">
-                                                <i class="far fa-trash-alt"></i>
-                                            </a>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="cart-img">
-                                            <a href="product-details.html">
-                                                <img src="{% static 'img/product/pro2.jpg' %}" alt="" />
-                                            </a>
-                                        </div>
-                                        <div class="cart-content">
-                                            <h3>
-                                                <a href="product-details.html">Black & White Shoes</a>
-                                            </h3>
-                                            <div class="cart-price">
-                                                <span class="new">$ 229.9</span>
-                                                <span>
-                                                    <del>$239.9</del>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="del-icon">
-                                            <a href="#">
-                                                <i class="far fa-trash-alt"></i>
-                                            </a>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="total-price">
-                                            <span class="f-left">Total:</span>
-                                            <span class="f-right">$300.0</span>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="checkout-link">
-                                            <a href="cart.html">Shopping Cart</a>
-                                            <a class="red-color" href="checkout.html">Checkout</a>
-                                        </div>
-                                    </li>
-                                </ul>
+                            <li class="d-shop-cart"><a href="{% url 'cart' %}"><i class="flaticon-shopping-cart"></i></a>
                             </li>
                         </ul>
                     </div>
