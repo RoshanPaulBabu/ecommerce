@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import Customer, Seller, Category, Subcategory, Product, Cart, Address
+from .models import Customer, Seller, Category, Subcategory, Product, Cart, Address, Order, OrderItem
 
 
 
-
+admin.site.register(Order)
+admin.site.register(OrderItem)
 admin.site.register(Customer)
 admin.site.register(Address)
 admin.site.register(Seller)

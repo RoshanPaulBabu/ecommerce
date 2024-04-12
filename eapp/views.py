@@ -121,6 +121,7 @@ def change_password(request):
 
     return render(request, 'customer/change_password.html')
 
+
 class CustomTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
         return (
@@ -326,3 +327,46 @@ def decrease_quantity(request, cart_item_id):
         cart_item.delete()
     return redirect('cart')
 
+
+@login_required
+def checkout(request):
+    customer = request.user.customer
+    cart_items = Cart.objects.filter(customer=customer)
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+    if request.method == 'POST':
+        address_id = request.POST.get('address_id')
+        address = Address.objects.get(id=address_id)
+        order = Order.objects.create(customer=customer, address=address)
+        for item in cart_items:
+            OrderItem.objects.create(order=order, product=item.product, quantity=item.quantity)
+            # Reduce the quantity of the product in stock
+            item.product.quantity_in_stock -= item.quantity
+            item.product.save()
+            item.delete()
+        return redirect('order_detail', order.id)
+    else:
+        addresses = Address.objects.filter(customer=customer)
+        context = {
+            'cart_items': cart_items,
+            'total_price': total_price,
+            'addresses': addresses,
+        }
+        return render(request, 'checkouts.html', context)
+
+
+@login_required
+def order_list(request):
+    customer = request.user.customer
+    orders = Order.objects.filter(customer=customer)
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'order_list.html', context)
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    context = {
+        'order': order,
+    }
+    return render(request, 'order_detail.html', context)

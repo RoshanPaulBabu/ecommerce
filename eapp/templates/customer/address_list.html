@@ -33,6 +33,7 @@
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">{{ address.recepient_name }}</h5>
+            <p class="card-text">Contact: {{ address.recepient_contact }}</p>
             <p class="card-text">{{ address.address_line1 }}</p>
             <p class="card-text">{{ address.city }}, {{ address.state }} - {{ address.postal_code }}</p>
             <a href="{% url 'address_edit' address.id %}" class="btn btn-info">Edit</a>

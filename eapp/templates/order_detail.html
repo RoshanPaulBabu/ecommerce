@@ -1,0 +1,209 @@
+{% extends 'base.html' %} {% block content %} {% load static %}
+
+<style>
+  .main-menu a {
+    color: black !important;
+  }
+
+  .container {
+    padding: 30px;
+    margin-top: 150px;
+    background-color: #fff1f0;
+  }
+  .btn {
+    background-color: #fe4536;
+  }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #progressbar-1 {
+        color: #455a64;
+      }
+
+      #progressbar-1 li {
+        list-style-type: none;
+        font-size: 13px;
+        width: 33.33%;
+        float: left;
+        position: relative;
+      }
+
+      #progressbar-1 #step1:before {
+        content: "1";
+        color: #fff;
+        width: 29px;
+        margin-left: 22px;
+        padding-left: 11px;
+      }
+
+      #progressbar-1 #step2:before {
+        content: "2";
+        color: #fff;
+        width: 29px;
+      }
+
+      #progressbar-1 #step3:before {
+        content: "3";
+        color: #fff;
+        width: 29px;
+        margin-right: 22px;
+        text-align: center;
+      }
+
+      #progressbar-1 li:before {
+        line-height: 29px;
+        display: block;
+        font-size: 12px;
+        background: #455a64;
+        border-radius: 50%;
+        margin: auto;
+      }
+
+      #progressbar-1 li:after {
+        content: "";
+        width: 121%;
+        height: 2px;
+        background: #1277a5;
+        position: absolute;
+        left: 0%;
+        right: 0%;
+        top: 15px;
+        z-index: -1;
+      }
+
+      #progressbar-1 li:nth-child(2):after {
+        left: 50%;
+      }
+
+      #progressbar-1 li:nth-child(1):after {
+        left: 25%;
+        width: 121%;
+      }
+
+      #progressbar-1 li:nth-child(3):after {
+        left: 25%;
+        width: 50%;
+      }
+
+      #progressbar-1 li.active:before,
+      #progressbar-1 li.active:after {
+        background: #1266f1;
+      }
+
+      .card-stepper {
+        z-index: 0;
+      }
+
+      .img-order {
+        height: 170px;
+        border-radius: 10px;
+        margin-right: 0px;
+        margin-left: 60px;
+      }
+
+      .flex-fill {
+        margin-top: 27px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="vh-100 gradient-custom-2">
+      <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-md-10 col-lg-8 col-xl-6">
+            <div class="card card-stepper mb-4" style="border-radius: 16px">
+              <div class="card-header p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="text-muted mb-2">
+                      Order ID
+                      <span class="fw-bold text-body">{{ order.id }}</span>
+                    </p>
+                    <p class="text-muted mb-0">
+                      Place On
+                      <span class="fw-bold text-body"
+                        >{{ order.order_date }}</span
+                      >
+                    </p>
+                    <p class="text-muted mb-0">
+                      Delivery Address: <br /><span class="fw-bold text-body"
+                        >{{ order.address.recepient_name }}</span
+                      >
+                    </p>
+                    <p class="text-muted mb-0">
+                      Delivery Address
+                      <span class="fw-bold text-body">{{ order.address }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body p-4">
+                {% for item in order.orderitem_set.all %}
+                <div class="d-flex flex-row mb-4 pb-2">
+                  <div class="flex-fill">
+                    <h5 class="bold">{{ item.product.name }}</h5>
+                    <p class="text-muted">Qty: {{ item.quantity }} item</p>
+                    <h4 class="mb-3">
+                      $ {{ item.total_price }}
+                      <span class="small text-muted"> via (COD) </span>
+                    </h4>
+                    <p class="text-muted">
+                      Tracking Status on:
+                      <span class="text-body">11:30pm, Today</span>
+                    </p>
+                  </div>
+                  <div>
+                    <img
+                      class="align-self-center img-fluid img-order"
+                      src="{{ item.product.image_1.url }}"
+                      width="150"
+                    />
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="progress">
+                  <div
+                    class="progress-bar progress-bar-striped bg-info"
+                    role="progressbar"
+                    style="width: {% if order.status == 'Pending' %} 33% {% elif order.status == 'Backordered' %} 66% {% else %} 100% {% endif %}"
+                    aria-valuenow="{% if order.status == 'Processing' %} 33 {% elif order.status == 'SHIPPED' %} 66 {% else %} 100 {% endif %}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  ></div>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                  <div class="text-muted">Pending</div>
+                  <div class="text-muted">Placed</div>
+                  <div class="text-muted">Shipped</div>
+                  <div class="text-muted">Delivered</div>
+                </div>
+              </div>
+              <div class="card-footer p-4">
+                <div class="d-flex justify-content-between">
+                  <h5 class="fw-normal mb-0"><a href="#!">Track</a></h5>
+                  <div class="border-start h-100"></div>
+                  <h5 class="fw-normal mb-0"><a href="#!">Cancel</a></h5>
+                  <div class="border-start h-100"></div>
+                  <h5 class="fw-normal mb-0"><a href="#!">Pre-pay</a></h5>
+                  <div class="border-start h-100"></div>
+                  <h5 class="fw-normal mb-0">
+                    <a href="#!" class="text-muted"
+                      ><i class="fas fa-ellipsis-v"></i
+                    ></a>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
+
+{% endblock %}

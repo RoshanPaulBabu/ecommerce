@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+
+    .main-menu a {
+    color: black !important;
+}
+
+.container {
+    padding: 30px;
+    margin-top: 150px;
+    background-color: #fff1f0;
+}
+
+.btn {
+  margin-top: 10px;
+  padding: 10px 5px;
+  border-radius: 10px;
+  color: #fe4536;
+  background-color: #fff1f0;
+}
+
+.btn:hover {
+        background-color: #fcd5d2; /* Darker green */
+        color: #fe3321;
+    }
+
+</style>
+<div class="container">
+  <section class="vh-100 gradient-custom-2">
+    <div class="container py-5 h-100" style="
+    margin-top: 20px;
+">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-10 col-lg-8 col-xl-8"> <!-- Increased card width -->
+          {% for order in orders %}
+          <div class="card mb-4" style="border-radius: 16px;">
+            <div class="card-header text-white ">
+              <a href="{% url 'order_detail' order.id %}"><h5 class="mb-0">Order ID: {{ order.id }}</h5></a>
+            </div>
+            <div class="card-body p-4">
+              <a href="{% url 'order_detail' order.id %}">
+              <p class="text-muted mb-2">Order Date: {{ order.order_date }}</p>
+              <p class="text-muted mb-2">Order Status: {{ order.status }}</p>
+            </a>
+              <div id="orderItems{{ order.id }}" style="display: none;"> <!-- Initially hidden -->
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in order.orderitem_set.all %}
+                      <tr>
+                        <td><img class="img-fluid rounded" src="{{ item.product.image_1.url }}" width="50" alt="{{ item.product.name }}"></td> <!-- Reduced image size -->
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.price }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <h6 class="fw-normal mb-0">Order Total:</h6>
+                <h6 class="fw-bold mb-0">${{ order.total_price }}</h6>
+              </div>
+              <button class="btn btn-secondary dropdown-toggle" onclick="toggleOrderItems({{ order.id }})">Order Items</button> <!-- Button to toggle order items table -->
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    function toggleOrderItems(orderId) {
+      var orderItems = document.getElementById('orderItems' + orderId);
+      if (orderItems.style.display === 'none') {
+        orderItems.style.display = 'block';
+      } else {
+        orderItems.style.display = 'none';
+      }
+    }
+  </script>
+  
+{% endblock %}

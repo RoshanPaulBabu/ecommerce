@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+    .main-menu a {
+    color: black !important;
+}
+
+.container {
+    padding: 30px;
+    margin-top: 150px;
+    background-color: white;
+}
+
+
+.card {
+    margin-top: 10px;
+}
+
+.select-btn {
+    margin-left: 20px;
+}
+
+.add-btn {
+    margin-top: 20px;
+}
+
+</style>
+        <!-- checkout-area start -->
+        <section class="checkout-area pb-70">
+            <div class="container">
+                <form method="post" id="checkout-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="address_id" id="address-id">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="checkbox-form">
+                                <h3>Billing Details</h3>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>Shipping Address</h3>
+                                        {% for address in addresses %}
+                                          <div class="card">
+                                            <div class="card-body">
+                                              <p class="card-text">{{ address }}</p>
+                                              <a href="{% url 'address_edit' address.id %}" class="card-link">Edit Address</a>
+                                              <button type="button" onclick="selectAddress({{ address.id }})" class="btn theme-btn select-btn">Select</button>
+                                            </div>
+                                          </div>
+                                        {% endfor %}
+                                        <button type="button" onclick="window.location.href='{% url 'address_create' %}'" class="btn theme-btn add-btn">Add Address</button>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="your-order mb-30 ">
+                                <h3>Your order</h3>
+                                <div class="your-order-table table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="product-name">Product</th>
+                                                <th class="product-total">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in cart_items %}
+                                            <tr class="cart_item">
+                                                <td class="product-name">
+                                                    {{ item.product.name }} <strong class="product-quantity"> × {{ item.quantity }}</strong>
+                                                </td>
+                                                <td class="product-total">
+                                                    <span class="amount">{{ item.sub_total }}</span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="order-total">
+                                                <th>Order Total</th>
+                                                <td><strong><span class="amount">${{ total_price }}</span></strong>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="order-button-payment mt-20">
+                                <button type="submit" value="Place Order" class="btn theme-btn">Place order</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <!-- checkout-area end -->
+        <script>
+            function selectAddress(addressId) {
+              const addressIdInput = document.getElementById('address-id');
+              addressIdInput.value = addressId;
+            }
+            
+            </script>
+        {% endblock %}
+
+    
