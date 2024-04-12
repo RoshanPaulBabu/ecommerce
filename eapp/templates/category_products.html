@@ -78,17 +78,17 @@
                                 <i class="flaticon-shopping-cart"></i>
                             </button>
                         </form> 
-                      <a href="#" title="Quick View">
+                      <a href="{% url 'product_detail' product.id %}" title="Quick View">
                         <i class="flaticon-eye"></i>
                       </a>
                     </div>
                   </div>
                   <div class="product-content pr-0">
                     <div class="pro-cat mb-10">
-                      <a href="#">{{ product.subcategory }}</a>
+                      <a href="{% url 'product_detail' product.id %}">{{ product.subcategory }}</a>
                     </div>
                     <h4>
-                      <a href="#">{{ product.name }}</a>
+                      <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
                     </h4>
                     <div class="product-meta">
                       <div class="pro-price">
@@ -126,7 +126,7 @@
                 <input type="text" id="amount" />
               </div>
             </div>
-            
+              
 
             <div class="shop-widget">
               <h3 class="shop-title">Tags</h3>
