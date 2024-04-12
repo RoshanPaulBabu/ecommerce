@@ -21,6 +21,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
 from .models import *
 from .forms import AddressForm
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 
 # Create your views here.
@@ -100,7 +102,7 @@ def user_logout(request):
     return redirect('index') 
 
 
-
+@login_required
 def change_password(request):
     if request.method == 'POST':
         old_password = request.POST.get('old_password')
@@ -267,7 +269,7 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     return render(request, 'product-details.html', {'product': product})
 
-
+@login_required
 def cart(request):
     customer = request.user.customer
     cart_items = Cart.objects.filter(customer=customer)
@@ -300,7 +302,7 @@ def add_to_cart(request):
             messages.error(request, 'Invalid request.')
     return redirect('cart')
 
-
+@login_required
 def delete_item_in_cart(request, id):
     customer = request.user.customer
     product = get_object_or_404(Product, id=id)
@@ -343,6 +345,30 @@ def checkout(request):
             item.product.quantity_in_stock -= item.quantity
             item.product.save()
             item.delete()
+        
+        # Send confirmation email to customer
+        email_subject = 'Order Confirmation'
+        email_body_html = render_to_string('order_confirmation_email.html', {'order': order})
+        email_body_text = "Thank you for your order. Your order ID is {}. We will process it shortly.".format(order.id)
+        email = EmailMultiAlternatives(
+            email_subject,
+            email_body_text,
+            settings.EMAIL_HOST_USER,
+            [customer.email],
+        )
+        email.attach_alternative(email_body_html, 'text/html')
+        email.send()
+        
+        # Generate PDF bill
+        pdf_template = get_template('bill_template.html')
+        html = pdf_template.render({'order': order})
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="bill.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('We had some errors <pre>' + html + '</pre>')
+        return response
+        
         return redirect('order_detail', order.id)
     else:
         addresses = Address.objects.filter(customer=customer)
@@ -370,3 +396,26 @@ def order_detail(request, order_id):
         'order': order,
     }
     return render(request, 'order_detail.html', context)
+
+
+def product_list(request):
+    products = Product.objects.all()
+    categories = Category.objects.prefetch_related('subcategory_set').all()
+    return render(request, 'product_list.html', {'products': products, 'categories': categories})
+
+def search_results(request):
+    query = request.GET.get('q')
+    products = Product.objects.filter(name__icontains=query) | \
+               Product.objects.filter(subcategory__subcategory_name__icontains=query) | \
+               Product.objects.filter(subcategory__parent_category__category_name__icontains=query)
+    return render(request, 'search_results.html', {'products': products, 'query': query})
+
+def category_products(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    products = Product.objects.filter(subcategory__parent_category=category)
+    return render(request, 'category_products.html', {'category': category, 'products': products})
+
+def subcategory_products(request, subcategory_id):
+    subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
+    products = Product.objects.filter(subcategory=subcategory)
+    return render(request, 'subcategory_products.html', {'subcategory': subcategory, 'products': products})
