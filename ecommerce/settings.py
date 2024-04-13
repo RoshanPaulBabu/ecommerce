@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,4 +136,102 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'traderroshan11@gmail.com'
 EMAIL_HOST_PASSWORD = 'zycrpznkaecexxja'
+
+LOGIN_URL = 'login'
+
+
+JAZZMIN_SETTINGS = {
+    # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "AdminDashboard",
+
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "ThreadHub",
+    
+    # Logo to use for your site, must be present in static files, used for brand on top left
+    "site_logo": "img\logo\logo.png",
+    
+    # CSS classes that are applied to the logo above
+    "site_logo_classes": "img-square",
+    
+    ############
+    # Top Menu #
+    ############
+
+    # Links to put along the top menu
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Customers", "url": "http://127.0.0.1:8000/admin/eapp/customer/", "new_window": False},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Products", "url": "http://127.0.0.1:8000/admin/eapp/product/", "new_window": False},
+
+    ],
+
+#     "custom_links": {
+#     "eapp": [{
+#         # Any Name you like
+#         "name": "Inventory",
+
+#         # url name e.g `admin:index`, relative urls e.g `/admin/index` or absolute urls e.g `https://domain.com/admin/index`
+#         "url": "http://127.0.0.1:8000/inventory/",
+
+#         # any font-awesome icon, see list here https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2 (optional)
+#         "icon": "fas fa-comments",     
+#     }]
+# },
+    
+    # Hide these apps when generating side menu e.g (auth)
+    "hide_apps": ["auth"],
+
+    # Order apps automatically, but make sure choice and book admin links are first within the books app
+    "order_with_respect_to": ["eapp.Customer", "eapp.Seller","eapp.Product"],
+
+    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_brand": "ThreadHub",
+    "welcome_sign": "Welcome to the AdminDashboard",
+    "copyright": "ThreadHub  Ltd",
+     "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "eapp.Address": "fas fa-address-book",
+        "eapp.Customer": "fas fa-user",
+        "eapp.Seller": "fas fa-user",
+        "eapp.Product": "fas fa-ad",
+        "books.Genre": "fas fa-photo-video",
+        "loans.BookLoan": "fas fa-book-open",
+        "loans.Library": "fas fa-book-reader",
+    },
+    # Icons that are used when one is not manually specified
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    #################
+    # Related Modal #
+    #################
+    # Activate Bootstrap modal
+    "related_modal_active": False,
+    
+    #############
+    # UI Tweaks #
+    #############
+    # Relative paths to custom CSS/JS scripts (must be present in static files)
+    "custom_css": None,
+    "custom_js": None,
+    # Whether to show the UI customizer on the sidebar
+    "show_ui_builder": True,
+    ###############
+    # Change view #
+    ###############
+    # Render out the change view as a single form, or in tabs, current options are
+    # - single
+    # - horizontal_tabs (default)
+    # - vertical_tabs
+    # - collapsible
+    # - carousel
+    "changeform_format": "horizontal_tabs",
+}
 

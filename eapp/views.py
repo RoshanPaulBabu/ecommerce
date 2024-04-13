@@ -401,7 +401,21 @@ def order_detail(request, order_id):
 def product_list(request):
     products = Product.objects.all()
     categories = Category.objects.prefetch_related('subcategory_set').all()
+    
+    # Filter products by price if price parameters are provided
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    
+    if min_price and max_price:
+        products = products.filter(price__gte=min_price, price__lte=max_price)
+    elif min_price:
+        products = products.filter(price__gte=min_price)
+    elif max_price:
+        products = products.filter(price__lte=max_price)
+    
     return render(request, 'product_list.html', {'products': products, 'categories': categories})
+
+
 
 def search_results(request):
     query = request.GET.get('q')

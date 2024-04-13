@@ -1,14 +1,14 @@
 {% extends 'base.html' %} {% block content %} {% load static %}
 
 <style>
-    .main-menu a {
+  .main-menu a {
     color: black !important;
   }
-  
+
   .container {
     margin-top: 100px;
   }
-  
+
   #cart-button {
     border: none;
     background-color: #fcfcfc; /* Change color as needed */
@@ -18,13 +18,42 @@
     font-size: 20px; /* Increase font size */
     cursor: pointer;
     transition: background-color 0.3s;
+  }
+
+  #cart-button:hover {
+    background-color: #fe4536; /* Darker color on hover */
+  }
+
+  .price-filter {
+  margin-bottom: 20px;
 }
 
-#cart-button:hover {
-    background-color: #fe4536; /* Darker color on hover */
+.price-filter form {
+  display: flex;
+  align-items: center;
 }
-  
-  </style>
+
+.price-filter label {
+  margin-right: 10px;
+}
+
+.price-filter input {
+  width: 100px;
+  margin-right: 10px;
+}
+
+.price-filter button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.price-filter button:hover {
+  background-color: #0056b3;
+}
+
 </style>
 <!-- shop-area start -->
 <section class="shop-area pt-100 pb-100">
@@ -40,8 +69,7 @@
           </div>
           <div class="col-xl-7 col-lg-6 col-md-6">
             <div class="shop-tab f-right">
-              <ul class="nav text-center" id="myTab" role="tablist">
-              </ul>
+              <ul class="nav text-center" id="myTab" role="tablist"></ul>
             </div>
             >
           </div>
@@ -70,25 +98,40 @@
                       {% endif %}
                     </a>
                     <div class="product-action text-center">
-                        <form id="add-to-cart-form" action="{% url 'add_to_cart' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" id="cart-button">
-                                <i class="flaticon-shopping-cart"></i>
-                            </button>
-                        </form> 
-                      <a href="{% url 'product_detail' product.id %}" title="Quick View">
+                      <form
+                        id="add-to-cart-form"
+                        action="{% url 'add_to_cart' %}"
+                        method="post"
+                      >
+                        {% csrf_token %}
+                        <input
+                          type="hidden"
+                          name="product_id"
+                          value="{{ product.id }}"
+                        />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" id="cart-button">
+                          <i class="flaticon-shopping-cart"></i>
+                        </button>
+                      </form>
+                      <a
+                        href="{% url 'product_detail' product.id %}"
+                        title="Quick View"
+                      >
                         <i class="flaticon-eye"></i>
                       </a>
                     </div>
                   </div>
                   <div class="product-content pr-0">
                     <div class="pro-cat mb-10">
-                      <a href="{% url 'product_detail' product.id %}">{{ product.subcategory }}</a>
+                      <a href="{% url 'product_detail' product.id %}"
+                        >{{ product.subcategory }}</a
+                      >
                     </div>
                     <h4>
-                      <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                      <a href="{% url 'product_detail' product.id %}"
+                        >{{ product.name }}</a
+                      >
                     </h4>
                     <div class="product-meta">
                       <div class="pro-price">
@@ -111,165 +154,170 @@
       </div>
       <div class="col-xl-3 col-lg-4">
         <div class="sidebar-shop">
-            <div class="shop-widget">
-                <h3 class="shop-title">Search by</h3>
-                <form action="{% url 'search_results' %}" method="GET" class="shop-search">
-                  <input type="text" name="q" placeholder="Your keyword...." />
-                  <button type="submit"><i class="fa fa-search"></i></button>
-                </form>
-              </div>
+          <div class="shop-widget">
+            <h3 class="shop-title">Search by</h3>
+            <form
+              action="{% url 'search_results' %}"
+              method="GET"
+              class="shop-search"
+            >
+              <input type="text" name="q" placeholder="Your keyword...." />
+              <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+          </div>
 
-            <div class="shop-widget">
-              <h3 class="shop-title">Filter selection</h3>
-              <div class="price-filter">
-                <div id="slider-range"></div>
-                <input type="text" id="amount" />
-              </div>
-            </div>
+          <div class="price-filter">
+            <form action="{% url 'product_list' %}" method="get">
+              <label for="min_price">Min Price:</label>
+              <input type="number" id="min_price" name="min_price" min="0" placeholder="Min Price" value="{{ request.GET.min_price }}">
+              
+              <label for="max_price">Max Price:</label>
+              <input type="number" id="max_price" name="max_price" min="0" placeholder="Max Price" value="{{ request.GET.max_price }}">
+              
+              <button type="submit">Apply Filter</button>
+            </form>
+          </div>
+          
 
-            <div class="shop-widget">
-                <h3 class="shop-title">Categories</h3>
-                <ul class="shop-link">
-                  {% for category in categories %}
+          <div class="shop-widget">
+            <h3 class="shop-title">Categories</h3>
+            <ul class="shop-link">
+              {% for category in categories %}
+              <li>
+                <a href="{% url 'category_products' category.id %}">
+                  <h6>{{ category.category_name }}</h6>
+                </a>
+                <ul>
+                  {% for subcategory in category.subcategory_set.all %}
                   <li>
-                    <a href="{% url 'category_products' category.id %}">
-                            <h6>{{ category.category_name }}</h6>
+                    <a href="{% url 'subcategory_products' subcategory.id %}">
+                      {{ subcategory.subcategory_name }}
                     </a>
-                    <ul>
-                      {% for subcategory in category.subcategory_set.all %}
-                      <li>
-                        <a href="{% url 'subcategory_products' subcategory.id %}">
-                          {{ subcategory.subcategory_name }}
-                        </a>
-                      </li>
-                      {% endfor %}
-                    </ul>
                   </li>
                   {% endfor %}
                 </ul>
-              </div>              
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
 
-            <div class="shop-widget">
-              <h3 class="shop-title">Tags</h3>
-              <ul class="shop-tag">
-                <li><a href="shop.html"> Minimal</a></li>
-                <li><a href="shop.html"> T-Shirts</a></li>
-                <li><a href="shop.html"> Pants</a></li>
-                <li><a href="shop.html"> Jeants</a></li>
-                <li><a href="shop.html"> Winter</a></li>
-                <li><a href="shop.html"> Latest</a></li>
-                <li><a href="shop.html"> New</a></li>
-                <li><a href="shop.html"> Sale</a></li>
-              </ul>
-            </div>
-            <div class="shop-widget">
-              <h3 class="shop-title">color</h3>
-              <ul class="shop-link">
-                <li>
-                  <a href="shop.html"><span class="blue"></span> Blue</a>
-                </li>
-                <li>
-                  <a href="shop.html"><span class="green"></span> Green</a>
-                </li>
-                <li>
-                  <a href="shop.html"><span class="orange"></span> Orange</a>
-                </li>
-                <li>
-                  <a href="shop.html"><span class="navy"></span> Navy</a>
-                </li>
-                <li>
-                  <a href="shop.html"
-                    ><span class="pinkish"></span> Pinkish</a
-                  >
-                </li>
-                <li>
-                  <a href="shop.html"
-                    ><span class="vista"></span> Vista Blue</a
-                  >
-                </li>
-              </ul>
-            </div>
+          <div class="shop-widget">
+            <h3 class="shop-title">Tags</h3>
+            <ul class="shop-tag">
+              <li><a href="shop.html"> Minimal</a></li>
+              <li><a href="shop.html"> T-Shirts</a></li>
+              <li><a href="shop.html"> Pants</a></li>
+              <li><a href="shop.html"> Jeants</a></li>
+              <li><a href="shop.html"> Winter</a></li>
+              <li><a href="shop.html"> Latest</a></li>
+              <li><a href="shop.html"> New</a></li>
+              <li><a href="shop.html"> Sale</a></li>
+            </ul>
+          </div>
+          <div class="shop-widget">
+            <h3 class="shop-title">color</h3>
+            <ul class="shop-link">
+              <li>
+                <a href="shop.html"><span class="blue"></span> Blue</a>
+              </li>
+              <li>
+                <a href="shop.html"><span class="green"></span> Green</a>
+              </li>
+              <li>
+                <a href="shop.html"><span class="orange"></span> Orange</a>
+              </li>
+              <li>
+                <a href="shop.html"><span class="navy"></span> Navy</a>
+              </li>
+              <li>
+                <a href="shop.html"><span class="pinkish"></span> Pinkish</a>
+              </li>
+              <li>
+                <a href="shop.html"><span class="vista"></span> Vista Blue</a>
+              </li>
+            </ul>
+          </div>
 
-            <div class="shop-widget">
-              <h3 class="shop-title">Recent Product</h3>
-              <ul class="shop-sidebar-product">
-                <li>
-                  <div class="side-pro-img">
-                    <a href="product-details.html"
-                      ><img src="img/product/latest/shop-rsp3.jpg" alt=""
-                    /></a>
+          <div class="shop-widget">
+            <h3 class="shop-title">Recent Product</h3>
+            <ul class="shop-sidebar-product">
+              <li>
+                <div class="side-pro-img">
+                  <a href="product-details.html"
+                    ><img src="img/product/latest/shop-rsp3.jpg" alt=""
+                  /></a>
+                </div>
+                <div class="side-pro-content">
+                  <div class="side-pro-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
                   </div>
-                  <div class="side-pro-content">
-                    <div class="side-pro-rating">
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                    </div>
-                    <h5>
-                      <a href="product-details.html">Raglan Baseball-Style</a>
-                    </h5>
-                    <div class="side-pro-price">
-                      <span>$119.00 USD</span>
-                    </div>
+                  <h5>
+                    <a href="product-details.html">Raglan Baseball-Style</a>
+                  </h5>
+                  <div class="side-pro-price">
+                    <span>$119.00 USD</span>
                   </div>
-                </li>
-                <li>
-                  <div class="side-pro-img">
-                    <a href="product-details.html"
-                      ><img src="img/product/latest/shop-rsp2.jpg" alt=""
-                    /></a>
+                </div>
+              </li>
+              <li>
+                <div class="side-pro-img">
+                  <a href="product-details.html"
+                    ><img src="img/product/latest/shop-rsp2.jpg" alt=""
+                  /></a>
+                </div>
+                <div class="side-pro-content">
+                  <div class="side-pro-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
                   </div>
-                  <div class="side-pro-content">
-                    <div class="side-pro-rating">
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                    </div>
-                    <h5>
-                      <a href="product-details.html">Raglan Baseball-Style</a>
-                    </h5>
-                    <div class="side-pro-price">
-                      <span>$119.00 USD</span>
-                    </div>
+                  <h5>
+                    <a href="product-details.html">Raglan Baseball-Style</a>
+                  </h5>
+                  <div class="side-pro-price">
+                    <span>$119.00 USD</span>
                   </div>
-                </li>
-                <li>
-                  <div class="side-pro-img">
-                    <a href="product-details.html"
-                      ><img src="img/product/latest/shop-rsp4.jpg" alt=""
-                    /></a>
+                </div>
+              </li>
+              <li>
+                <div class="side-pro-img">
+                  <a href="product-details.html"
+                    ><img src="img/product/latest/shop-rsp4.jpg" alt=""
+                  /></a>
+                </div>
+                <div class="side-pro-content">
+                  <div class="side-pro-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
                   </div>
-                  <div class="side-pro-content">
-                    <div class="side-pro-rating">
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                    </div>
-                    <h5>
-                      <a href="product-details.html">Raglan Baseball-Style</a>
-                    </h5>
-                    <div class="side-pro-price">
-                      <span>$119.00 USD</span>
-                    </div>
+                  <h5>
+                    <a href="product-details.html">Raglan Baseball-Style</a>
+                  </h5>
+                  <div class="side-pro-price">
+                    <span>$119.00 USD</span>
                   </div>
-                </li>
-              </ul>
-            </div>
+                </div>
+              </li>
+            </ul>
+          </div>
 
-            <div class="shop-widget">
-              <div class="shop-sidebar-banner">
-                <a href="shop.html"
-                  ><img src="img/banner/shop-banner.jpg" alt=""
-                /></a>
-              </div>
+          <div class="shop-widget">
+            <div class="shop-sidebar-banner">
+              <a href="shop.html"
+                ><img src="img/banner/shop-banner.jpg" alt=""
+              /></a>
             </div>
           </div>
+        </div>
       </div>
     </div>
   </div>

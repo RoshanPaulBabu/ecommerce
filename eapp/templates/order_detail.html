@@ -170,8 +170,8 @@
                   <div
                     class="progress-bar progress-bar-striped bg-info"
                     role="progressbar"
-                    style="width: {% if order.status == 'Pending' %} 33% {% elif order.status == 'Backordered' %} 66% {% else %} 100% {% endif %}"
-                    aria-valuenow="{% if order.status == 'Processing' %} 33 {% elif order.status == 'SHIPPED' %} 66 {% else %} 100 {% endif %}"
+                    style="width: {% if order.status == 'Pending' %} 33% {% elif order.status == 'Processing' %} 66% {% else %} 100% {% endif %}"
+                    aria-valuenow="{% if order.status == 'Shipped/Dispatched' %} 33 {% elif order.status == 'Delivered' %} 66 {% else %} 100 {% endif %}"
                     aria-valuemin="0"
                     aria-valuemax="100"
                   ></div>

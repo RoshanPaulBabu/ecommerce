@@ -33,6 +33,9 @@ class Seller(models.Model):
     email = models.EmailField(unique=True)
     phone_no = models.CharField(max_length=12, unique=True)
     address = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.name
 
 class Category(models.Model):
     category_name = models.CharField(max_length=100, unique=True)
