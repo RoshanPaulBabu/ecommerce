@@ -25,8 +25,6 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 
-# Create your views here.
-# Create your views here.
 def index(request):
     products = Product.objects.all()
     return render(request, 'index.html', {'products': products})
@@ -337,6 +335,9 @@ def checkout(request):
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
+        if not address_id:
+            messages.error(request, "Please select or add an address to checkout.")
+            return redirect('checkout')
         address = Address.objects.get(id=address_id)
         order = Order.objects.create(customer=customer, address=address)
         for item in cart_items:
