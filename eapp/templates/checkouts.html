@@ -89,7 +89,11 @@
                                 </div>
                             </div>
                             <div class="order-button-payment mt-20">
+                                {% if cart_items %}
                                 <button type="submit" value="Place Order" class="btn theme-btn">Place order</button>
+                            {% else %}
+                            <p style="font-size: large; color: brown; font-weight: bold;">Your cart is empty. Please add items to proceed.</p>
+                            {% endif %}
                             </div>
                         </div>
                     </div>

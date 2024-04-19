@@ -77,11 +77,12 @@
                     </p>
                   </div>
                   <div>
+                    <a href="{% url 'product_detail' item.product.id %}">
                     <img
                       class="align-self-center img-fluid img-order"
                       src="{{ item.product.image_1.url }}"
                       width="150"
-                    />
+                    /></a>
                   </div>
                 </div>
                 {% endfor %}

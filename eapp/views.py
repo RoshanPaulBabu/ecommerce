@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
@@ -53,6 +53,11 @@ def register(request):
             validate_password(password)
         except ValidationError as e:
             messages.error(request, ', '.join(e.messages))
+            return render(request, 'customer/register.html')
+        
+                # Validate phone number
+        if not phone_number.isnumeric() or len(phone_number) < 10 or len(phone_number) > 12:
+            messages.error(request, 'Phone number must be between 10 and 12 digits and contain only numbers.')
             return render(request, 'customer/register.html')
 
         # Create user
@@ -393,6 +398,9 @@ def order_list(request):
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    
+    if order.customer != request.user.customer:
+        return HttpResponseNotFound("Order not found.")
     context = {
         'order': order,
     }

@@ -38,14 +38,14 @@
               <div class="slide-btn">
                 <a
                   class="btn theme-btn"
-                  href="shop.html"
+                  href="{% url 'product_list' %}"
                   data-animation="fadeInLeft"
                   data-delay=".6s"
                   >shop now</a
                 >
                 <a
                   class="btn white-btn"
-                  href="shop.html"
+                  href="{% url 'product_list' %}"
                   data-animation="fadeInRight"
                   data-delay=".9s"
                   >category</a
@@ -113,14 +113,25 @@
                 />
               </a>
               <div class="product-action text-center">
-                <form id="add-to-cart-form" action="{% url 'add_to_cart' %}" method="post">
+                <{% if product.quantity_in_stock > 0 %}
+                <form
+                  id="add-to-cart-form"
+                  action="{% url 'add_to_cart' %}"
+                  method="post"
+                >
                   {% csrf_token %}
-                  <input type="hidden" name="product_id" value="{{ product.id }}">
-                  <input type="hidden" name="quantity" value="1">
+                  <input
+                    type="hidden"
+                    name="product_id"
+                    value="{{ product.id }}"
+                  />
+                  <input type="hidden" name="quantity" value="1" />
                   <button type="submit" id="cart-button">
-                      <i class="flaticon-shopping-cart"></i>
+                    <i class="flaticon-shopping-cart"></i>
                   </button>
-              </form>                          
+                </form>
+              {% endif %}
+                                       
                 <a href="{% url 'product_detail' product.id %}" title="Quick View">
                   <i class="flaticon-eye"></i>
                 </a>

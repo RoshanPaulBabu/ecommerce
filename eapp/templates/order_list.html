@@ -58,7 +58,7 @@
                     <tbody>
                       {% for item in order.orderitem_set.all %}
                       <tr>
-                        <td><img class="img-fluid rounded" src="{{ item.product.image_1.url }}" width="50" alt="{{ item.product.name }}"></td> <!-- Reduced image size -->
+                        <td><a href="{% url 'product_detail' item.product.id %}"><img class="img-fluid rounded" src="{{ item.product.image_1.url }}" width="50" alt="{{ item.product.name }}"></a></td> <!-- Reduced image size -->
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.quantity }}</td>
                         <td>${{ item.product.price }}</td>

@@ -113,29 +113,56 @@
                                     </ul>
                                 </div>
 
-                                <div class="product-desc variant-item">
-                                    <p>{{ product.description|safe }}</p>
-                                </div>
-
                                 <div class="product-info-list variant-item">
                                     <ul>
                                         <li><span>Brands:</span> Hewlett-Packard</li>
                                         <li><span>Product Code:</span> d12</li>
                                         <li><span>Reward Points:</span> 100</li>
-                                        <li><span>Stock:</span> <span class="in-stock">In Stock</span></li>
+                                        <li><span>Reward</span> <span class="in-stock">Reward</span></li>
                                     </ul>
                                 </div>
 
                                 <div class="product-action-details variant-item">
                                     <div class="product-details-action">
-                                        <form method="POST" action="{% url 'add_to_cart' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                                            <div class="plus-minus">
-                                                <div class="cart-plus-minus"><input type="text" value="1" id="quantity" name="quantity"/></div>
-                                            </div>
-                                            <button type="submit" class="btn theme-btn">Add to Cart</button>
-                                        </form>
+                                        {% if product.quantity_in_stock == 0 %}
+                                            <span class="stock-status" style="font-size: larger; color: brown;">Out of Stock</span>
+                                        {% elif product.quantity_in_stock < product.reorder_level %}
+                                            <span class="stock-status" style="font-size: larger; color: brown;">Limited Stock</span>
+                                        {% endif %}
+                                        
+                                        {% if product.quantity_in_stock > 0 %}
+                                            <form method="POST" action="{% url 'add_to_cart' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <div class="plus-minus">
+                                                    <div class="cart-plus-minus">
+                                                        <input type="number" value="1" id="quantity" name="quantity" min="1" max="{{ product.quantity_in_stock }}" />
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn theme-btn">Add to Cart</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                
+
+                                <div class="tab-pane fade show active" id="home6" role="tabpanel" aria-labelledby="home-tab6">
+                                    <div class="desc-text">
+                                        {% with description_lines=product.description|linebreaks %}
+                                            {% if description_lines|length > 5 %}
+                                                <div class="short-description">
+                                                    <p>{{ product.description|safe|linebreaksbr|truncatewords_html:20 }}</p>
+                                                    <button class="btn theme-btn see-more-btn">See more</button>
+                                                </div>
+                                                <div class="full-description" style="display: none;">
+                                                    <p>{{ product.description|safe|linebreaksbr }}</p>
+                                                    <button class="btn theme-btn see-less-btn">See less</button>
+                                                </div>
+                                            {% else %}
+                                                <p>{{ product.description|safe }}</p>
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                             </div>
@@ -264,5 +291,25 @@
             </div>
         </section>
         <!-- shop-area end -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var seeMoreBtn = document.querySelector('.see-more-btn');
+                var seeLessBtn = document.querySelector('.see-less-btn');
+                var shortDescription = document.querySelector('.short-description');
+                var fullDescription = document.querySelector('.full-description');
+        
+                seeMoreBtn.addEventListener('click', function() {
+                    shortDescription.style.display = 'none';
+                    fullDescription.style.display = 'block';
+                });
+        
+                seeLessBtn.addEventListener('click', function() {
+                    fullDescription.style.display = 'none';
+                    shortDescription.style.display = 'block';
+                });
+            });
+        </script>
+        
+        
     {% endblock %}
  

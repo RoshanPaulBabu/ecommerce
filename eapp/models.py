@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import MinLengthValidator
 
 class Address(models.Model):
     recepient_name = models.CharField(max_length=100, null=True)
-    recepient_contact = models.CharField(max_length=20, null=True)
+    recepient_contact = models.CharField(max_length=12, null=True, validators=[MinLengthValidator(10)])
     address_line1 = models.CharField(max_length=255)
     address_line2 = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100)
@@ -18,7 +19,7 @@ class Address(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     customer_name = models.CharField(max_length=100)
-    contact_number = models.CharField(max_length=20, blank=True, null=True)
+    contact_number = models.CharField(max_length=12, blank=True, null=True, validators=[MinLengthValidator(10)])
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     role = models.CharField(max_length=50, default='customer')
@@ -31,7 +32,7 @@ class Customer(models.Model):
 class Seller(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    phone_no = models.CharField(max_length=12, unique=True)
+    phone_no = models.CharField(max_length=12, unique=True, validators=[MinLengthValidator(10)])
     address = models.CharField(max_length=255)
     
     def __str__(self):
@@ -77,7 +78,7 @@ class Cart(models.Model):
         return int(self.product.price) * int(self.quantity)
 
     def __str__(self):
-        return f"Cart - Customer: {self.customer.customer_name} - Product: {self.product.product_name} - Qty: {self.quantity}"
+        return f"Cart - Customer: {self.customer.customer_name} - Product: {self.product.name} - Qty: {self.quantity}"
     
     
 class Order(models.Model):
