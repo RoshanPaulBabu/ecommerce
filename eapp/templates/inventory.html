@@ -1,0 +1,31 @@
+<!-- inventory.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory</title>
+</head>
+<body>
+    <h1>Inventory</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity in Stock</th>
+                <th>Reorder Level</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.quantity_in_stock }}</td>
+                <td>{{ product.reorder_level }}</td>
+                <td><a href="{% url 'send_purchase_order' product.id %}">Send Purchase Order</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+

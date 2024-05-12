@@ -442,3 +442,39 @@ def subcategory_products(request, subcategory_id):
     subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
     products = Product.objects.filter(subcategory=subcategory)
     return render(request, 'subcategory_products.html', {'subcategory': subcategory, 'products': products})
+
+
+def inventory(request):
+    products = Product.objects.all()
+    return render(request, 'inventory.html', {'products': products})
+
+def send_purchase_order(request, product_id):
+    if request.method == 'POST':
+        product = Product.objects.get(pk=product_id)
+        seller_id = request.POST.get('seller')
+        quantity = request.POST.get('quantity')
+        seller = Seller.objects.get(pk=seller_id)
+        
+        # Create a new purchase order
+        purchase_order = PurchaseOrder.objects.create(
+            TotalAmount=product.cost * int(quantity),
+            PurchaseOrderDate=timezone.now(),
+            Status='Pending',  # You can set the status as required
+            Seller=seller
+        )
+        
+        # Create a new purchase order item
+        purchase_order_item = PurchaseOrderItem.objects.create(
+            Quantity=quantity,
+            Product=product,
+            PurchaseOrder=purchase_order,
+            PurchaseUnitPrice=product.cost,
+            TotalAmount=product.cost * int(quantity)
+        )
+        
+        return HttpResponse('Purchase Order Sent Successfully!')
+    else:
+        product = Product.objects.get(pk=product_id)
+        sellers = Seller.objects.filter(id=product.seller.id)
+        return render(request, 'send_purchase_order.html', {'product': product, 'sellers': sellers})
+    
