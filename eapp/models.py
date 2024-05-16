@@ -93,7 +93,7 @@ class Product(models.Model):
             )
 
             # Send a message to the admin
-            AdminMessage.objects.create(
+            POMessage.objects.create(
                 product=self,
                 quantity=self.sku,
                 purchase_order=purchase_order,
@@ -162,6 +162,7 @@ class PurchaseOrder(models.Model):
     Status = models.CharField(max_length=250, blank=True)
     ExpectedDeliveryDate = models.DateField(blank=True, null=True)
     Seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    seller_message = models.TextField(blank=True)
     
     def __str__(self):
         return f"Purchase Order {self.id}"
@@ -186,7 +187,7 @@ class PurchaseOrderItem(models.Model):
     
 
 
-class AdminMessage(models.Model):
+class POMessage(models.Model):
     purchase_order = models.OneToOneField(PurchaseOrder, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
@@ -203,7 +204,7 @@ class AdminMessage(models.Model):
 
     
     
-@receiver(post_save, sender=AdminMessage)
+@receiver(post_save, sender=POMessage)
 def update_purchase_order_status(sender, instance, **kwargs):
     # If the admin confirms the message, update the status of the PurchaseOrder
     if instance.confirmed:

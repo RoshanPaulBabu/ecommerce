@@ -28,8 +28,8 @@ urlpatterns = [
     path('search/', views.search_results, name='search_results'),
     path('category/<int:category_id>/', views.category_products, name='category_products'),
     path('subcategory/<int:subcategory_id>/', views.subcategory_products, name='subcategory_products'),
-    path('inventory/', views.inventory, name='inventory'),
-    path('send-purchase-order/<int:product_id>/', views.send_purchase_order, name='send_purchase_order'),
-    path('seller/', views.SellerLoginView.as_view(), name='seller_login'),
     path('create_purchase_order/', views.CreatePurchaseOrderView.as_view(), name='create_purchase_order'),
+    path('seller', views.seller_purchase_orders, name='seller_purchase_orders'),
+    path('seller/purchase_order/<int:purchase_order_id>/', views.purchase_order_details, name='purchase_order_details'),
+    path('seller/purchase_order/<int:purchase_order_id>/reject/', views.reject_purchase_order, name='reject_purchase_order'),
 ]

@@ -171,24 +171,26 @@ JAZZMIN_SETTINGS = {
 
     ],
 
-#     "custom_links": {
-#     "eapp": [{
-#         # Any Name you like
-#         "name": "Inventory",
+    "custom_links": {
+    "eapp": [{
+        # Any Name you like
+        "name": "Send Purchase Order",
+        
+        "new_window": True,
 
-#         # url name e.g `admin:index`, relative urls e.g `/admin/index` or absolute urls e.g `https://domain.com/admin/index`
-#         "url": "http://127.0.0.1:8000/inventory/",
+        # url name e.g `admin:index`, relative urls e.g `/admin/index` or absolute urls e.g `https://domain.com/admin/index`
+        "url": "http://127.0.0.1:8000/create_purchase_order/",
 
-#         # any font-awesome icon, see list here https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2 (optional)
-#         "icon": "fas fa-comments",     
-#     }]
-# },
+        # any font-awesome icon, see list here https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2 (optional)
+        "icon": "fas fa-comments",     
+    }]
+},
     
     # Hide these apps when generating side menu e.g (auth)
     "hide_apps": ["auth"],
 
     # Order apps automatically, but make sure choice and book admin links are first within the books app
-    "order_with_respect_to": ["eapp.Customer", "eapp.Seller","eapp.Product"],
+    "order_with_respect_to": ["eapp.Customer", "eapp.Seller","eapp.Category","eapp.Product"],
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_brand": "ThreadHub",
@@ -198,17 +200,19 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
-        "eapp.Address": "fas fa-address-book",
+        "eapp.Category": "fas fa-address-book",
         "eapp.Customer": "fas fa-user",
-        "eapp.Seller": "fas fa-user",
+        "eapp.Seller": "fas fa-users-cog",
         "eapp.Product": "fas fa-ad",
+        "eapp.POMessage": "fas fa-comments",
+        "eapp.Order": "fas fa-book-reader",
         "books.Genre": "fas fa-photo-video",
         "loans.BookLoan": "fas fa-book-open",
         "loans.Library": "fas fa-book-reader",
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
+    "default_icon_children": "fas fa-chevron-circle-right",
     #################
     # Related Modal #
     #################
@@ -232,7 +236,7 @@ JAZZMIN_SETTINGS = {
     # - vertical_tabs
     # - collapsible
     # - carousel
-    "changeform_format": "horizontal_tabs",
+    "changeform_format": "carousel",
 }
 
 
@@ -241,15 +245,15 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-orange",
-    "accent": "accent-orange",
-    "navbar": "navbar-orange navbar-light",
+    "brand_colour": "navbar-light",
+    "accent": "accent-navy",
+    "navbar": "navbar-navy navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": False,
-    "sidebar": "sidebar-light-orange",
+    "sidebar": "sidebar-light-navy",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,

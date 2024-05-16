@@ -96,7 +96,19 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'You have successfully logged in!')
-            return redirect('index')  # Change 'index' to your desired redirect URL after login
+            
+            # Redirect based on user role
+            try:
+                customer = user.customer
+                return redirect('index')  # Redirect customer to index page
+            except Customer.DoesNotExist:
+                try:
+                    seller = user.seller
+                    return redirect('seller_purchase_orders')  # Redirect seller to seller dashboard
+                except Seller.DoesNotExist:
+                    messages.error(request, 'You are not authorized to access this page.')
+                    return redirect('login')  # Redirect to login page if no associated role found
+
         else:
             messages.error(request, 'Invalid email or password. Please try again.')
             return render(request, 'customer/login.html')  # Change 'login.html' to your login template path
@@ -340,6 +352,10 @@ def checkout(request):
     customer = request.user.customer
     cart_items = Cart.objects.filter(customer=customer)
     total_price = sum(item.product.price * item.quantity for item in cart_items)
+    
+    if total_price == 0:
+        return redirect('order_list')  # Redirect to order details with a placeholder order id
+    
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
         if not address_id:
@@ -446,59 +462,6 @@ def subcategory_products(request, subcategory_id):
     return render(request, 'subcategory_products.html', {'subcategory': subcategory, 'products': products})
 
 
-def inventory(request):
-    products = Product.objects.all()
-    return render(request, 'inventory.html', {'products': products})
-
-def send_purchase_order(request, product_id):
-    if request.method == 'POST':
-        product = Product.objects.get(pk=product_id)
-        seller_id = request.POST.get('seller')
-        quantity = request.POST.get('quantity')
-        seller = Seller.objects.get(pk=seller_id)
-        
-        # Create a new purchase order
-        purchase_order = PurchaseOrder.objects.create(
-            TotalAmount=product.cost * int(quantity),
-            PurchaseOrderDate=timezone.now(),
-            Status='Pending',  # You can set the status as required
-            Seller=seller
-        )
-        
-        # Create a new purchase order item
-        purchase_order_item = PurchaseOrderItem.objects.create(
-            Quantity=quantity,
-            Product=product,
-            PurchaseOrder=purchase_order,
-            PurchaseUnitPrice=product.cost,
-            TotalAmount=product.cost * int(quantity)
-        )
-        
-        return HttpResponse('Purchase Order Sent Successfully!')
-    else:
-        product = Product.objects.get(pk=product_id)
-        sellers = Seller.objects.filter(id=product.seller.id)
-        return render(request, 'send_purchase_order.html', {'product': product, 'sellers': sellers})
-    
-
-class SellerLoginView(View):
-    def get(self, request):
-        return render(request, 'login.html')
-
-    def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
-        seller = authenticate(request, username=username, password=password)
-
-        if seller is not None:
-            login(request, seller)
-            return redirect('seller_dashboard')
-        else:
-            messages.error(request, 'Invalid email or password. Please try again.')
-            return render(request, 'login.html') 
-
-
-
 
 
 class CreatePurchaseOrderView(View):
@@ -546,3 +509,45 @@ class CreatePurchaseOrderView(View):
             )
 
         return redirect('/admin/eapp/purchaseorder/')  # Redirect to a success page
+    
+def seller_purchase_orders(request):
+    # Assuming you have a way to identify the current seller, e.g., request.user.seller
+    seller = request.user.seller
+    purchase_orders = PurchaseOrder.objects.filter(Seller=seller)
+    return render(request, 'seller_purchase_orders.html', {'purchase_orders': purchase_orders})
+
+from django.db import transaction
+
+@transaction.atomic
+def purchase_order_details(request, purchase_order_id):
+    purchase_order = get_object_or_404(PurchaseOrder, id=purchase_order_id)
+    order_items = PurchaseOrderItem.objects.filter(PurchaseOrder=purchase_order)
+    if request.method == 'POST':
+        # Handle form submission to update delivery date and status
+        delivery_date = request.POST.get('delivery_date')
+        status = request.POST.get('status')
+        # Update purchase order with new delivery date and status
+        purchase_order.ExpectedDeliveryDate = delivery_date
+        purchase_order.Status = status
+        purchase_order.save()
+
+        # Update product quantity if status is "Delivered"
+        if status == 'Delivered':
+            for item in order_items:
+                item.Product.quantity_in_stock += item.Quantity
+                item.Product.save()
+        return redirect('seller_purchase_orders')
+
+    return render(request, 'purchase_order_details.html', {'purchase_order': purchase_order, 'order_items': order_items})
+
+def reject_purchase_order(request, purchase_order_id):
+    if request.method == 'GET':
+        seller_message = request.GET.get('seller_message', '')  # Get seller message from the query parameters
+        purchase_order = get_object_or_404(PurchaseOrder, id=purchase_order_id)  # Get the purchase order object
+
+        # Update purchase order status and seller message
+        purchase_order.Status = 'Rejected'
+        purchase_order.seller_message = seller_message
+        purchase_order.save()
+
+        return redirect('seller_purchase_orders')  # Redirect to seller purchase orders page

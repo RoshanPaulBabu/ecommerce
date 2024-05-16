@@ -17,7 +17,7 @@
                     <div class="breadcrumb-text text-center">
                         <h1>Login</h1>
                         <ul class="breadcrumb-menu">
-                            <li><a href="index.html">home</a></li>
+                            <li><a href="{% url 'index' %}">home</a></li>
                             <li><span>Login</span></li>
                         </ul>
                     </div>
@@ -39,7 +39,7 @@
                             {% csrf_token %}
                             <div>
                                 <label for="email">Email:</label>
-                                <input type="email" id="email" name="email" placeholder="Enter Username or Email address..." required>
+                                <input type="username" id="email" name="email" placeholder="Enter Username or Email address..." required>
                             </div>
                             <div>
                                 <label for="password">Password:</label>

@@ -158,8 +158,8 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 admin.site.register(PurchaseOrder, PurchaseOrderAdmin)
 
 
-@admin.register(AdminMessage)
-class AdminMessageAdmin(admin.ModelAdmin):
+@admin.register(POMessage)
+class POMessageAdmin(admin.ModelAdmin):
     list_display = ('product', 'total_amount', 'quantity', 'confirmed',)
     list_filter = ('confirmed',)
     search_fields = ('product__name', 'purchase_order__id')
