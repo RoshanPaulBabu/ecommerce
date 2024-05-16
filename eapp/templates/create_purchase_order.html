@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Purchase Order</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Create Purchase Order</h1>
+    <form method="get" id="seller-form">
+        <label for="seller">Select Seller:</label>
+        <select name="seller" id="seller" onchange="document.getElementById('seller-form').submit();">
+            <option value="">Select a seller</option>
+            {% for seller in sellers %}
+                <option value="{{ seller.id }}" {% if seller.id|stringformat:"s" == request.GET.seller %}selected{% endif %}>{{ seller.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <form method="post" id="purchase-order-form">
+        {% csrf_token %}
+        <input type="hidden" name="total_amount" id="total_amount">
+        <input type="date" name="purchase_order_date" value="{{ date.today }}" hidden><br>
+        <select name="seller" id="seller" onchange="document.getElementById('seller-form').submit();" hidden>
+            <option value="">Select a seller</option>
+            {% for seller in sellers %}
+                <option value="{{ seller.id }}" {% if seller.id|stringformat:"s" == request.GET.seller %}selected{% endif %}>{{ seller.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="purchase-order-items">
+            <h3>Purchase Order Items</h3>
+            <div class="purchase-order-item">
+                <label for="product">Select Product:</label>
+                <select name="product" class="product" onchange="updateUnitPrice(this)">
+                    <option value="">Select a product</option>
+                    {% for product in products %}
+                        <option value="{{ product.id }}" data-cost="{{ product.cost }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select><br>
+                
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" class="quantity" oninput="calculateItemTotal(this)" required><br>
+
+                <label for="purchase_unit_price">Unit Price:</label>
+                <input type="number" step="0.01" name="purchase_unit_price" class="purchase_unit_price" readonly><br>
+
+                <label for="item_total_amount">Total Amount:</label>
+                <input type="number" step="0.01" name="item_total_amount" class="item_total_amount" readonly><br>
+
+                <button type="button" onclick="addNewItem()">Add Another Item</button>
+            </div>
+        </div>
+
+        <label for="order_total_amount">Order Total Amount:</label>
+        <input type="number" step="0.01" id="order_total_amount" readonly><br>
+
+        <button type="submit" onclick="updateTotalAmount()">Create Purchase Order</button>
+    </form>
+
+    <script>
+        function addNewItem() {
+            var itemContainer = document.createElement('div');
+            itemContainer.className = 'purchase-order-item';
+            itemContainer.innerHTML = `
+                <label for="product">Select Product:</label>
+                <select name="product" class="product" onchange="updateUnitPrice(this)">
+                    <option value="">Select a product</option>
+                    {% for product in products %}
+                        <option value="{{ product.id }}" data-cost="{{ product.cost }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select><br>
+                
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" class="quantity" oninput="calculateItemTotal(this)" required><br>
+
+                <label for="purchase_unit_price">Unit Price:</label>
+                <input type="number" step="0.01" name="purchase_unit_price" class="purchase_unit_price" readonly><br>
+
+                <label for="item_total_amount">Total Amount:</label>
+                <input type="number" step="0.01" name="item_total_amount" class="item_total_amount" readonly><br>
+
+                <button type="button" onclick="removeItem(this)">Remove Item</button>
+            `;
+            document.getElementById('purchase-order-items').appendChild(itemContainer);
+        }
+
+        function removeItem(button) {
+            button.parentElement.remove();
+            updateOrderTotalAmount();
+        }
+
+        function updateUnitPrice(selectElement) {
+            var cost = selectElement.options[selectElement.selectedIndex].getAttribute('data-cost');
+            var unitPriceInput = selectElement.parentElement.querySelector('.purchase_unit_price');
+            unitPriceInput.value = cost;
+            calculateItemTotal(unitPriceInput);
+        }
+
+        function calculateItemTotal(element) {
+            var itemContainer = element.parentElement;
+            var quantity = itemContainer.querySelector('.quantity').value;
+            var unitPrice = itemContainer.querySelector('.purchase_unit_price').value;
+            var itemTotalAmount = itemContainer.querySelector('.item_total_amount');
+            if (quantity && unitPrice) {
+                itemTotalAmount.value = (quantity * unitPrice).toFixed(2);
+            } else {
+                itemTotalAmount.value = '';
+            }
+            updateOrderTotalAmount();
+        }
+
+        function updateOrderTotalAmount() {
+            var totalAmount = 0;
+            var itemTotalAmounts = document.querySelectorAll('.item_total_amount');
+            itemTotalAmounts.forEach(function(itemTotalAmount) {
+                if (itemTotalAmount.value) {
+                    totalAmount += parseFloat(itemTotalAmount.value);
+                }
+            });
+            document.getElementById('order_total_amount').value = totalAmount.toFixed(2);
+            document.getElementById('total_amount').value = totalAmount.toFixed(2);
+        }
+
+        function updateTotalAmount() {
+            updateOrderTotalAmount();
+        }
+    </script>
+</body>
+</html>

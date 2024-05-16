@@ -33,6 +33,7 @@ class Customer(models.Model):
     
 
 class Seller(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone_no = models.CharField(max_length=12, unique=True, validators=[MinLengthValidator(10)])
@@ -164,6 +165,8 @@ class PurchaseOrder(models.Model):
     
     def __str__(self):
         return f"Purchase Order {self.id}"
+    
+from decimal import Decimal    
 
 class PurchaseOrderItem(models.Model):
     Quantity = models.IntegerField()
@@ -175,7 +178,7 @@ class PurchaseOrderItem(models.Model):
     def save(self, *args, **kwargs):
         # Calculate total amount before saving
         if self.Quantity is not None and self.PurchaseUnitPrice is not None:
-            self.TotalAmount = self.Quantity * self.PurchaseUnitPrice
+            self.TotalAmount = Decimal(self.Quantity) * self.PurchaseUnitPrice
         super().save(*args, **kwargs)
 
     def __str__(self):

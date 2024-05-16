@@ -1,3 +1,4 @@
+from datetime import date
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -23,6 +24,7 @@ from .models import *
 from .forms import AddressForm
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from django.views import View
 
 
 def index(request):
@@ -478,3 +480,69 @@ def send_purchase_order(request, product_id):
         sellers = Seller.objects.filter(id=product.seller.id)
         return render(request, 'send_purchase_order.html', {'product': product, 'sellers': sellers})
     
+
+class SellerLoginView(View):
+    def get(self, request):
+        return render(request, 'login.html')
+
+    def post(self, request):
+        username = request.POST['username']
+        password = request.POST['password']
+        seller = authenticate(request, username=username, password=password)
+
+        if seller is not None:
+            login(request, seller)
+            return redirect('seller_dashboard')
+        else:
+            messages.error(request, 'Invalid email or password. Please try again.')
+            return render(request, 'login.html') 
+
+
+
+
+
+class CreatePurchaseOrderView(View):
+    def get(self, request):
+        sellers = Seller.objects.all()
+        products = Product.objects.none()  # Initially empty
+
+        if 'seller' in request.GET:
+            seller_id = request.GET.get('seller')
+            if seller_id:
+                products = Product.objects.filter(seller_id=seller_id)
+        
+        context = {
+            'sellers': sellers,
+            'products': products,
+        }
+        return render(request, 'create_purchase_order.html', context)
+    
+    def post(self, request):
+        seller_id = request.POST.get('seller')
+        total_amount = request.POST.get('total_amount')
+
+        # Get the selected seller
+        selected_seller = Seller.objects.get(id=seller_id)
+
+        # Create the PurchaseOrder object with the selected seller
+        purchase_order = PurchaseOrder.objects.create(
+            TotalAmount=total_amount,
+            PurchaseOrderDate=date.today(),
+            Seller=selected_seller,  # Assign the Seller object, not just the ID
+        )
+
+        # Save purchase order items
+        for i in range(len(request.POST.getlist('product'))):
+            product_id = request.POST.getlist('product')[i]
+            product = Product.objects.get(id=product_id)
+            quantity = request.POST.getlist('quantity')[i]
+            purchase_unit_price = Product.objects.get(id=product_id).cost
+            
+            PurchaseOrderItem.objects.create(
+                Product=product,
+                Quantity=quantity,
+                PurchaseUnitPrice=purchase_unit_price,
+                PurchaseOrder=purchase_order,
+            )
+
+        return redirect('/admin/eapp/purchaseorder/')  # Redirect to a success page

@@ -30,4 +30,6 @@ urlpatterns = [
     path('subcategory/<int:subcategory_id>/', views.subcategory_products, name='subcategory_products'),
     path('inventory/', views.inventory, name='inventory'),
     path('send-purchase-order/<int:product_id>/', views.send_purchase_order, name='send_purchase_order'),
+    path('seller/', views.SellerLoginView.as_view(), name='seller_login'),
+    path('create_purchase_order/', views.CreatePurchaseOrderView.as_view(), name='create_purchase_order'),
 ]
