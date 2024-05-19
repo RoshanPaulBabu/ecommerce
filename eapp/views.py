@@ -513,8 +513,16 @@ class CreatePurchaseOrderView(View):
 def seller_purchase_orders(request):
     # Assuming you have a way to identify the current seller, e.g., request.user.seller
     seller = request.user.seller
+    username = seller.name
     purchase_orders = PurchaseOrder.objects.filter(Seller=seller)
-    return render(request, 'seller_purchase_orders.html', {'purchase_orders': purchase_orders})
+    return render(request, 'seller_purchase_orders.html', {'purchase_orders': purchase_orders, 'username': username})
+
+def seller_purchase_orders_history(request):
+    # Assuming you have a way to identify the current seller, e.g., request.user.seller
+    seller = request.user.seller
+    username = seller.name
+    purchase_orders = PurchaseOrder.objects.filter(Seller=seller)
+    return render(request, 'history.html', {'purchase_orders': purchase_orders, 'username': username})
 
 from django.db import transaction
 

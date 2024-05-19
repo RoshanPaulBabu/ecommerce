@@ -51,7 +51,7 @@
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'seller_purchase_orders_history' %}">History</a>
+                        <a class="nav-link" href="{% url 'seller_purchase_orders' %}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a>
@@ -65,7 +65,7 @@
         <h1 class="text-center mb-5">Purchase Orders</h1>
         <div class="row">
             <div class="col-md-12">
-                <h3 class="h3 mb-5">Pending Orders</h3>
+                <h3 class="mb-5">Delivered Orders</h3>
                 <table class="table">
                     <thead>
                         <tr>
@@ -78,7 +78,7 @@
                     </thead>
                     <tbody>
                         {% for purchase_order in purchase_orders %}
-                        {% if purchase_order.Status != 'Not Initiated' and purchase_order.Status != 'Rejected' and purchase_order.Status != 'Delivered' and purchase_order.Status == 'Pending' %}
+                        {% if purchase_order.Status == 'Delivered'%}
                         <tr onclick="window.location='{% url 'purchase_order_details' purchase_order.id %}'">
                             <td>{{ purchase_order.id }}</td>
                             <td>{{ purchase_order.PurchaseOrderDate }}</td>
@@ -93,10 +93,8 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
-                <h3 class="h3 mb-5">In progress Orders</h3>
+                <h3 class="mb-5">Rejected Orders</h3>
                 <table class="table">
                     <thead>
                         <tr>
@@ -109,7 +107,7 @@
                     </thead>
                     <tbody>
                         {% for purchase_order in purchase_orders %}
-                        {% if purchase_order.Status != 'Not Initiated' and purchase_order.Status != 'Rejected' and purchase_order.Status != 'Delivered' and purchase_order.Status == 'In Progress' %}
+                        {% if purchase_order.Status == 'Rejected'%}
                         <tr onclick="window.location='{% url 'purchase_order_details' purchase_order.id %}'">
                             <td>{{ purchase_order.id }}</td>
                             <td>{{ purchase_order.PurchaseOrderDate }}</td>
