@@ -41,7 +41,183 @@
       </div>
     </div>
     <!-- preloader end  -->
+    {% if user.is_staff %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete Confirmation</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('{% static "img/admindash.jpg" %}');;
+    background-size: cover;
+    backdrop-filter: blur(8px);
+  }
 
+  .card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  .card h2 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .card p {
+    margin-bottom: 20px;
+    color: #666;
+  }
+
+  .card form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card form input[type="submit"], .card form a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 10px;
+    text-decoration: none;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .card form input[type="submit"] {
+    background-color: #ff3333; /* Red color for Delete button */
+  }
+
+  .card form a {
+    background-color: #3333ff; /* Blue color for Cancel button */
+  }
+
+  .card form input[type="submit"]:hover, .card form a:hover {
+    background-color: #cc0000; /* Darker red color on hover for Delete button */
+  }
+
+  .card form a:hover {
+    background-color: #0000cc; /* Darker blue color on hover for Cancel button */
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-body d-flex flex-column align-items-center justify-content-center">
+    <h5 class="mb-0">Admin, Please Logout</h5>
+    <p class="mb-4">Before Leaving The Page!</p>
+    <a href="{% url 'logout' %}" class="btn btn-primary">Log-Out</a>
+  </div>
+</div>
+
+</body>
+</html>
+
+{% elif user.seller %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete Confirmation</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('{% static "img/sellerdash.jpg" %}');;
+    background-size: cover;
+    backdrop-filter: blur(8px);
+  }
+
+  .card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  .card h2 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .card p {
+    margin-bottom: 20px;
+    color: #666;
+  }
+
+  .card form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card form input[type="submit"], .card form a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 10px;
+    text-decoration: none;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .card form input[type="submit"] {
+    background-color: #ff3333; /* Red color for Delete button */
+  }
+
+  .card form a {
+    background-color: #3333ff; /* Blue color for Cancel button */
+  }
+
+  .card form input[type="submit"]:hover, .card form a:hover {
+    background-color: #cc0000; /* Darker red color on hover for Delete button */
+  }
+
+  .card form a:hover {
+    background-color: #0000cc; /* Darker blue color on hover for Cancel button */
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-body d-flex flex-column align-items-center justify-content-center">
+    <h5 class="mb-0">Seller, Please Logout</h5>
+    <p class="mb-4">Before Leaving The Page!</p>
+    <a href="{% url 'logout' %}" class="btn btn-primary">Log-Out</a>
+  </div>
+</div>
+
+</body>
+</html>
+
+{% else %}
     <!-- header start -->
     <header class="transparent-header transparent-header-2">
       <div class="header-area box-90">
@@ -294,6 +470,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
 
     <!-- JS here -->
     <script>

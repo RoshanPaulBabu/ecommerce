@@ -168,6 +168,9 @@ JAZZMIN_SETTINGS = {
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Products", "url": "http://127.0.0.1:8000/admin/eapp/product/", "new_window": False},
+        
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Log-Out", "url": "http://127.0.0.1:8000/logout/", "new_window": False},
 
     ],
 

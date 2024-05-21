@@ -113,7 +113,7 @@
                 />
               </a>
               <div class="product-action text-center">
-                <{% if product.quantity_in_stock > 0 %}
+                {% if product.quantity_in_stock > 0 %}
                 <form
                   id="add-to-cart-form"
                   action="{% url 'add_to_cart' %}"

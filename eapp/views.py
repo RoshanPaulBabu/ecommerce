@@ -510,6 +510,7 @@ class CreatePurchaseOrderView(View):
 
         return redirect('/admin/eapp/purchaseorder/')  # Redirect to a success page
     
+@login_required    
 def seller_purchase_orders(request):
     # Assuming you have a way to identify the current seller, e.g., request.user.seller
     seller = request.user.seller
@@ -517,6 +518,7 @@ def seller_purchase_orders(request):
     purchase_orders = PurchaseOrder.objects.filter(Seller=seller)
     return render(request, 'seller_purchase_orders.html', {'purchase_orders': purchase_orders, 'username': username})
 
+@login_required
 def seller_purchase_orders_history(request):
     # Assuming you have a way to identify the current seller, e.g., request.user.seller
     seller = request.user.seller
@@ -526,14 +528,25 @@ def seller_purchase_orders_history(request):
 
 from django.db import transaction
 
+@login_required
 @transaction.atomic
 def purchase_order_details(request, purchase_order_id):
     purchase_order = get_object_or_404(PurchaseOrder, id=purchase_order_id)
     order_items = PurchaseOrderItem.objects.filter(PurchaseOrder=purchase_order)
+    
     if request.method == 'POST':
         # Handle form submission to update delivery date and status
         delivery_date = request.POST.get('delivery_date')
         status = request.POST.get('status')
+        
+        # Check if the delivery date is provided
+        if not delivery_date:
+            messages.error(request, "Expected delivery date is required.")
+            return render(request, 'purchase_order_details.html', {
+                'purchase_order': purchase_order,
+                'order_items': order_items,
+            })
+        
         # Update purchase order with new delivery date and status
         purchase_order.ExpectedDeliveryDate = delivery_date
         purchase_order.Status = status
@@ -544,10 +557,12 @@ def purchase_order_details(request, purchase_order_id):
             for item in order_items:
                 item.Product.quantity_in_stock += item.Quantity
                 item.Product.save()
+        
         return redirect('seller_purchase_orders')
 
     return render(request, 'purchase_order_details.html', {'purchase_order': purchase_order, 'order_items': order_items})
 
+@login_required
 def reject_purchase_order(request, purchase_order_id):
     if request.method == 'GET':
         seller_message = request.GET.get('seller_message', '')  # Get seller message from the query parameters
