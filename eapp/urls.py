@@ -33,4 +33,5 @@ urlpatterns = [
     path('seller/history', views.seller_purchase_orders_history, name='seller_purchase_orders_history'),
     path('seller/purchase_order/<int:purchase_order_id>/', views.purchase_order_details, name='purchase_order_details'),
     path('seller/purchase_order/<int:purchase_order_id>/reject/', views.reject_purchase_order, name='reject_purchase_order'),
+    path('order/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
 ]

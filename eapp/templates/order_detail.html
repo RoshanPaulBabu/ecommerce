@@ -1,7 +1,9 @@
-{% extends 'base.html' %} {% block content %} {% load static %}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
 
-    <style>
-      .main-menu a {
+<style>
+  .main-menu a {
     color: black !important;
   }
 
@@ -10,122 +12,150 @@
     margin-top: 150px;
     background-color: #fff1f0;
   }
+
   .btn {
     background-color: #fe4536;
   }
 
-      .card-stepper {
-        z-index: 0;
-      }
+  .card-stepper {
+    z-index: 0;
+  }
 
-      .img-order {
-        height: 170px;
-        border-radius: 10px;
-        margin-right: 0px;
-        margin-left: 60px;
-      }
+  .img-order {
+    height: 170px;
+    border-radius: 10px;
+    margin-right: 0px;
+    margin-left: 60px;
+  }
 
-      .flex-fill {
-        margin-top: 27px;
-      }
-    </style>
-  </head>
-  <body>
-    <section class="vh-100 gradient-custom-2">
-      <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-          <div class="col-md-10 col-lg-8 col-xl-6">
-            <div class="card card-stepper mb-4" style="border-radius: 16px">
-              <div class="card-header p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p class="text-muted mb-2">
-                      Order ID
-                      <span class="fw-bold text-body">{{ order.id }}</span>
-                    </p>
-                    <p class="text-muted mb-0">
-                      Place On
-                      <span class="fw-bold text-body"
-                        >{{ order.order_date }}</span
-                      >
-                    </p>
-                    <p class="text-muted mb-0">
-                      Delivery Address: <br /><span class="fw-bold text-body"
-                        >{{ order.address.recepient_name }}</span
-                      >
-                    </p>
-                    <p class="text-muted mb-0">
-                      Delivery Address
-                      <span class="fw-bold text-body">{{ order.address }}</span>
-                    </p>
-                  </div>
+  .flex-fill {
+    margin-top: 27px;
+  }
+</style>
+</head>
+<body>
+  <section class="vh-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-10 col-lg-8 col-xl-6">
+          <div class="card card-stepper mb-4" style="border-radius: 16px">
+            <div class="card-header p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted mb-2">
+                    Order ID
+                    <span class="fw-bold text-body">{{ order.id }}</span>
+                  </p>
+                  <p class="text-muted mb-0">
+                    Place On
+                    <span class="fw-bold text-body">{{ order.order_date }}</span>
+                  </p>
+                  <p class="text-muted mb-0">
+                    Delivery Address: <br /><span class="fw-bold text-body">{{ order.address.recepient_name }}</span>
+                  </p>
+                  <p class="text-muted mb-0">
+                    Delivery Address
+                    <span class="fw-bold text-body">{{ order.address }}</span>
+                  </p>
                 </div>
               </div>
-              <div class="card-body p-4">
-                {% for item in order.orderitem_set.all %}
-                <div class="d-flex flex-row mb-4 pb-2">
-                  <div class="flex-fill">
-                    <h5 class="bold">{{ item.product.name }}</h5>
-                    <p class="text-muted">Qty: {{ item.quantity }} item</p>
-                    <h4 class="mb-3">
-                      $ {{ item.total_price }}
-                      <span class="small text-muted"> via (COD) </span>
-                    </h4>
-                    <p class="text-muted">
-                      Tracking Status on:
-                      <span class="text-body">11:30pm, Today</span>
-                    </p>
-                  </div>
-                  <div>
-                    <a href="{% url 'product_detail' item.product.id %}">
-                    <img
-                      class="align-self-center img-fluid img-order"
-                      src="{{ item.product.image_1.url }}"
-                      width="150"
-                    /></a>
-                  </div>
+            </div>
+            <div class="card-body p-4">
+              {% for item in order.orderitem_set.all %}
+              <div class="d-flex flex-row mb-4 pb-2">
+                <div class="flex-fill">
+                  <h5 class="bold">{{ item.product.name }}</h5>
+                  <p class="text-muted">Qty: {{ item.quantity }} item</p>
+                  <h4 class="mb-3">
+                    $ {{ item.total_price }}
+                    <span class="small text-muted"> via (COD) </span>
+                  </h4>
+                  <p class="text-muted">
+                    Tracking Status on:
+                    <span class="text-body">11:30pm, Today</span>
+                  </p>
                 </div>
-                {% endfor %}
-                <div class="progress" style="height: 30px;">
-                  <div
-                    class="progress-bar progress-bar-striped progress-bar-animated {% if order.status == 'Pending' %} bg-danger {% elif order.status == 'Processing' %} bg-warning {% elif order.status == 'Shipped/Dispatched' %} bg-primary {% else %} bg-success {% endif %}"
-                    role="progressbar"
-                    style="width: {% if order.status == 'Pending' %} 10% {% elif order.status == 'Processing' %} 33% {% elif order.status == 'Shipped/Dispatched' %}66% {% else %} 100% {% endif %}"
-                    aria-valuenow="{% if order.status == 'Shipped/Dispatched' %} 33 {% elif order.status == 'Delivered' %} 66 {% else %} 100 {% endif %}"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  >
-                    {% if order.status == 'Pending' %}
-                      Pending
-                    {% elif order.status == 'Processing' %}
-                      Processing
-                    {% elif order.status == 'Shipped/Dispatched' %}
-                      Shipped/Dispatched
-                    {% else %}
-                      Delivered
-                    {% endif %}
-                  </div>
+                <div>
+                  <a href="{% url 'product_detail' item.product.id %}">
+                  <img class="align-self-center img-fluid img-order" src="{{ item.product.image_1.url }}" width="150" /></a>
                 </div>
               </div>
-              <div class="card-footer p-4">
-                <div class="d-flex justify-content-between">
-                  <h5 class="fw-normal mb-0"><a href="#!">Track</a></h5>
-                  <div class="border-start h-100"></div>
-                  <h5 class="fw-normal mb-0"><a href="#!">Cancel</a></h5>
-                  <div class="border-start h-100"></div>
-                  <h5 class="fw-normal mb-0"><a href="#!">Pre-pay</a></h5>
-                  <div class="border-start h-100"></div>
-                  <h5 class="fw-normal mb-0">
-                    <a href="#!" class="text-muted"
-                      ><i class="fas fa-ellipsis-v"></i
-                    ></a>
-                  </h5>
+              {% endfor %}
+              <div class="progress" style="height: 30px;">
+                <div
+                  class="progress-bar progress-bar-striped progress-bar-animated {% if order.status == 'Pending' %} bg-danger {% elif order.status == 'Processing' %} bg-warning {% elif order.status == 'Shipped/Dispatched' %} bg-primary {% else %} bg-success {% endif %}"
+                  role="progressbar"
+                  style="width: {% if order.status == 'Pending' %} 10% {% elif order.status == 'Processing' %} 33% {% elif order.status == 'Shipped/Dispatched' %}66% {% else %} 100% {% endif %}"
+                  aria-valuenow="{% if order.status == 'Shipped/Dispatched' %} 33 {% elif order.status == 'Delivered' %} 66 {% else %} 100 {% endif %}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  {% if order.status == 'Pending' %}
+                    Pending
+                  {% elif order.status == 'Processing' %}
+                    Processing
+                  {% elif order.status == 'Shipped/Dispatched' %}
+                    Shipped/Dispatched
+                  {% elif order.status == 'Cancelled' %}
+                  Cancelled                  
+                  {% else %}
+                    Delivered
+                  {% endif %}
                 </div>
+              </div>
+            </div>
+            <div class="card-footer p-4">
+              <div class="d-flex justify-content-between">
+                {% if order.status == 'Cancelled' %}
+                <h5 class="fw-normal mb-0">
+                  <a>Order Cancelled</a>
+                </h5>
+                {% elif order.status == 'Delivered' %}
+                <h5 class="fw-normal mb-0">
+                  <a>Order Delivered</a>
+                </h5>
+                {% else %}
+                <h5 class="fw-normal mb-0">
+                  <a href="#" id="cancel-order-btn">Cancel</a>
+                </h5>
+                {% endif %}
+                <div class="border-start h-100"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
+  <!-- Modal -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="cancelOrderModalLabel">Confirm Order Cancellation</h5>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to cancel order #{{ order.id }}?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              <form method="post" action="{% url 'cancel_order' order.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger">Yes, Cancel Order</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  document.getElementById('cancel-order-btn').addEventListener('click', function() {
+      $('#cancelOrderModal').modal('show');
+  });
+</script>
 {% endblock %}

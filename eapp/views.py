@@ -407,7 +407,7 @@ def checkout(request):
 @login_required
 def order_list(request):
     customer = request.user.customer
-    orders = Order.objects.filter(customer=customer)
+    orders = Order.objects.filter(customer=customer).order_by('-order_date', '-id')
     context = {
         'orders': orders,
     }
@@ -574,3 +574,33 @@ def reject_purchase_order(request, purchase_order_id):
         purchase_order.save()
 
         return redirect('seller_purchase_orders')  # Redirect to seller purchase orders page
+    
+from django.core.mail import send_mail
+
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == 'POST':
+        # Update order status to 'Cancelled'
+        order.status = 'Cancelled'
+        order.save()
+        
+        # Increase the product quantity back in stock
+        order_items = OrderItem.objects.filter(order=order)
+        for item in order_items:
+            product = item.product
+            product.quantity_in_stock += item.quantity
+            product.save()
+        
+        # Send confirmation email
+        send_mail(
+            'Order Cancelled',
+            f'Your order #{order_id} has been cancelled.',
+            settings.DEFAULT_FROM_EMAIL,
+            [order.customer.email]
+        )
+        
+        messages.success(request, 'Order cancelled successfully.')
+        return redirect('order_detail', order_id=order.id)
+    
+ 
