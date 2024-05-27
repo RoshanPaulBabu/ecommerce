@@ -8,7 +8,7 @@ This Django-based E-Commerce application offers a comprehensive platform for man
 
 - **Customer and Seller Management**: Stores information about customers and sellers, including name, contact details, and email.
 
-- **Product Management**: Enables sellers to add, edit, and manage products with details such as name, description, price, quantity, and images.
+- **Product Management**: Enables admin to add, edit, and manage products with details such as name, description, price, quantity, and images.
 
 - **Category and Subcategory Management**: Provides a hierarchical structure for organizing products into categories and subcategories.
 
