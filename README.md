@@ -52,10 +52,10 @@ To set up this project locally:
 
 ```bash
 # 1. Clone the repository.
-git clone <repository_url>
+git clone https://github.com/RoshanPaulBabu/ecommerce.git
 
 # 2. Navigate to the project directory.
-cd <project_directory>
+cd ecom-master
 
 # 3. Install the required dependencies.
 pip install -r requirements.txt
