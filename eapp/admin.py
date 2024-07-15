@@ -117,7 +117,7 @@ class InventoryAdmin(admin.ModelAdmin):
                         'Low stock alert',
                         f'The product "{product.name}" is low on stock.',
                         settings.EMAIL_HOST_USER,  # Replace with your email
-                        ['roshanpaulbabu007@gmail.com'],  # Replace with admin email
+                        ['asddsasdasdasd@gmail.com'],  # Replace with admin email
                         fail_silently=False,
                     )
 
