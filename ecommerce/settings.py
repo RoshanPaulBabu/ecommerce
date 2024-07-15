@@ -134,8 +134,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'traderroshan11@gmail.com'
-EMAIL_HOST_PASSWORD = 'zycrpznkaecexxja'
+EMAIL_HOST_USER = 'tdaseadsdasd1@gmail.com'
+EMAIL_HOST_PASSWORD = 'jygjygjgjgjgkgk'
 
 LOGIN_URL = 'login'
 
